@@ -1,0 +1,11 @@
+# Игнорировать сгенерированные файлы Gradle
+/build
+.gradle
+
+# Игнорировать артефакты Android Studio/IDE
+.idea
+*.iml
+
+# Игнорировать временные файлы и кеш
+local.properties
+.DS_Store
