@@ -10,7 +10,7 @@ compileSdk 29
 defaultConfig {  
     applicationId "duress.keyboard"  
     minSdk 29
-    targetSdk 34
+    targetSdk 29
     versionCode 1  
     versionName "1.0"  
 }  
