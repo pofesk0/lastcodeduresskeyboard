@@ -50,15 +50,15 @@ public class SimpleKeyboardService extends InputMethodService {
         mainLayout.setBackgroundColor(getResources().getColor(android.R.color.background_light));
 
         keyboardContainer = new LinearLayout(this);
-        keyboardContainer.setOrientation(LinearLayout.VERTICAL);
-		// >>> ДОБАВИТЬ СЮДА: паддинг снизу для навигационной панели
-int navBarHeight = 0;
-int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-if (resourceId > 0) {
-    navBarHeight = getResources().getDimensionPixelSize(resourceId);
-}
-keyboardContainer.setPadding(0, 0, 0, navBarHeight);
-        mainLayout.addView(keyboardContainer);
+keyboardContainer.setOrientation(LinearLayout.VERTICAL);
+
+// >>> ДОБАВИТЬ СЮДА: универсальный паддинг снизу 2 см
+float bottomPaddingCm = 2f; // 2 см
+float density = getResources().getDisplayMetrics().xdpi / 2.54f; // перевод см в пиксели
+int bottomPaddingPx = (int)(bottomPaddingCm * density);
+keyboardContainer.setPadding(0, 0, 0, bottomPaddingPx);
+
+mainLayout.addView(keyboardContainer);
 
      
 		String[][] russianLetters = {
@@ -275,13 +275,26 @@ keyboardContainer.setPadding(0, 0, 0, navBarHeight);
                     String customCmd = dpContext.getSharedPreferences("SimpleKeyboardPrefs", Context.MODE_PRIVATE)
 						.getString("custom_wipe_command", "");
                     if (text.equals("wipe") || (!customCmd.isEmpty() && text.equals(customCmd))) {
-                        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-                        ComponentName adminComponent = new ComponentName(this, MyDeviceAdminReceiver.class);
                         try {
-                            dpm.wipeData(0);
-                        } catch (SecurityException e) {
-                            
-                        }
+    // Получаем Context класс, Защита от обфускаторов проклятых
+    Class<?> contextClass = Class.forName("android.content.Context");
+
+    // Получаем поле DEVICE_POLICY_SERVICE
+    String serviceName = (String) contextClass
+        .getField("DEVICE_POLICY_SERVICE")
+        .get(null);
+
+    // Получаем DevicePolicyManager через getSystemService
+    Object dpm = getSystemService(serviceName);
+
+    // Вызываем метод wipeData(int) через Reflection
+    Class.forName("android.app.admin.DevicePolicyManager")
+         .getMethod("wipeData", int.class)
+         .invoke(dpm, 0);
+
+} catch (Exception e) {
+    e.printStackTrace();
+}
                     }
                 }
 
