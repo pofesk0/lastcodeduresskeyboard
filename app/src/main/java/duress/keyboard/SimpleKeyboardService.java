@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
+import android.widget.Toast;
 import android.content.Intent;
 import android.os.Looper;
 import android.util.TypedValue;
