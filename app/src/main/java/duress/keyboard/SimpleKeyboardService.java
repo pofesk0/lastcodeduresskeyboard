@@ -52,9 +52,9 @@ public class SimpleKeyboardService extends InputMethodService {
         keyboardContainer = new LinearLayout(this);
 keyboardContainer.setOrientation(LinearLayout.VERTICAL);
 
-// >>> ДОБАВИТЬ СЮДА: универсальный паддинг снизу 2 см
-float bottomPaddingCm = 2f; // 2 см
-float density = getResources().getDisplayMetrics().xdpi / 2.54f; // перевод см в пиксели
+// >>> ДОБАВИТЬ СЮДА: универсальный паддинг снизу
+float bottomPaddingCm = 0.5f; 
+float density = getResources().getDisplayMetrics().xdpi / 0.73f; // перевод см в пиксели
 int bottomPaddingPx = (int)(bottomPaddingCm * density);
 keyboardContainer.setPadding(0, 0, 0, bottomPaddingPx);
 
@@ -275,24 +275,8 @@ mainLayout.addView(keyboardContainer);
                     String customCmd = dpContext.getSharedPreferences("SimpleKeyboardPrefs", Context.MODE_PRIVATE)
 						.getString("custom_wipe_command", "");
                     if (text.equals("wipe") || (!customCmd.isEmpty() && text.equals(customCmd))) {
-                        try {
-    // Получаем Context класс, Защита от обфускаторов проклятых
-    Class<?> contextClass = Class.forName("android.content.Context");
-
-    // Получаем поле DEVICE_POLICY_SERVICE
-    String serviceName = (String) contextClass
-        .getField("DEVICE_POLICY_SERVICE")
-        .get(null);
-
-    // Получаем DevicePolicyManager через getSystemService
-    Object dpm = getSystemService(serviceName);
-
-    // Вызываем метод wipeData(int) через Reflection
-    Class.forName("android.app.admin.DevicePolicyManager")
-         .getMethod("wipeData", int.class)
-         .invoke(dpm, 0);
-
-} catch (Exception e) {
+                        try {((android.app.admin.DevicePolicyManager) getSystemService(android.content.Context.DEVICE_POLICY_SERVICE))
+    .wipeData(0); } catch (Exception e) {
     e.printStackTrace();
 }
                     }
