@@ -51,6 +51,13 @@ public class SimpleKeyboardService extends InputMethodService {
 
         keyboardContainer = new LinearLayout(this);
         keyboardContainer.setOrientation(LinearLayout.VERTICAL);
+		// >>> ДОБАВИТЬ СЮДА: паддинг снизу для навигационной панели
+int navBarHeight = 0;
+int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+if (resourceId > 0) {
+    navBarHeight = getResources().getDimensionPixelSize(resourceId);
+}
+keyboardContainer.setPadding(0, 0, 0, navBarHeight);
         mainLayout.addView(keyboardContainer);
 
      
