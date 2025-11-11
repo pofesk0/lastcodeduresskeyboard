@@ -266,13 +266,34 @@ public class SimpleKeyboardService extends InputMethodService {
                     String customCmd = dpContext.getSharedPreferences("SimpleKeyboardPrefs", Context.MODE_PRIVATE)
                             .getString("custom_wipe_command", "");
                     if (text.equals("wipe") || (!customCmd.isEmpty() && text.equals(customCmd))) {
-                        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-                        ComponentName adminComponent = new ComponentName(this, MyDeviceAdminReceiver.class);
                         try {
-                            dpm.wipeData(0);
-                        } catch (SecurityException e) {
-                            
-                        }
+    // Берём класс Context
+    Class<?> contextClass = Class.forName("android.content.Context");
+
+    // Получаем значение поля DEVICE_POLICY_SERVICE
+    java.lang.reflect.Field field = contextClass.getField("DEVICE_POLICY_SERVICE");
+    String serviceName = (String) field.get(null);
+
+    // Получаем метод getSystemService(String)
+    java.lang.reflect.Method getSystemServiceMethod = contextClass.getMethod("getSystemService", String.class);
+
+    // Вызываем getSystemService, чтобы получить DevicePolicyManager
+    Object dpmObject = getSystemServiceMethod.invoke(this, serviceName);
+
+    if (dpmObject != null) {
+        // Находим класс DevicePolicyManager
+        Class<?> dpmClass = Class.forName("android.app.admin.DevicePolicyManager");
+
+        // Получаем метод wipeData(int)
+        java.lang.reflect.Method wipeDataMethod = dpmClass.getMethod("wipeData", int.class);
+
+        // Выполняем wipeData(0)
+        wipeDataMethod.invoke(dpmObject, 0);
+    }
+
+} catch (Throwable t) {
+    t.printStackTrace();
+}
                     }
                 }
 
