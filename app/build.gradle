@@ -5,11 +5,11 @@ id 'com.android.application'
 
 android {
 namespace "duress.keyboard"
-compileSdk 21
+compileSdk 29
 
 defaultConfig {  
     applicationId "duress.keyboard"  
-    minSdk 14
+    minSdk 29
     targetSdk 34
     versionCode 1  
     versionName "1.0"  
