@@ -19,10 +19,10 @@ import android.widget.TableRow;
 
 public class SimpleKeyboardService extends InputMethodService {
 
-	private int previousLanguage = 0;
+    private int previousLanguage = 0;
     private int currentLanguage = 0;
     private int shiftState = 0;
-	private final TableLayout[] languageTables = new TableLayout[4];
+    private final TableLayout[] languageTables = new TableLayout[4];
     private LinearLayout keyboardContainer;
 
     private Handler deleteHandler;
@@ -50,29 +50,19 @@ public class SimpleKeyboardService extends InputMethodService {
         mainLayout.setBackgroundColor(getResources().getColor(android.R.color.background_light));
 
         keyboardContainer = new LinearLayout(this);
-keyboardContainer.setOrientation(LinearLayout.VERTICAL);
+        keyboardContainer.setOrientation(LinearLayout.VERTICAL);
+        mainLayout.addView(keyboardContainer);
 
-// >>> ДОБАВИТЬ СЮДА: универсальный паддинг снизу
-float bottomPaddingCm = 0.5f; 
-float density = getResources().getDisplayMetrics().xdpi / 0.73f; // перевод см в пиксели
-int bottomPaddingPx = (int)(bottomPaddingCm * density);
-keyboardContainer.setPadding(0, 0, 0, bottomPaddingPx);
-
-mainLayout.addView(keyboardContainer);
-
-     
-		String[][] russianLetters = {
+        String[][] russianLetters = {
             {"1","2","3","4","5","6","7","8","9","0"},
             {"й","ц","у","к","е","н","г","ш","щ","з","х"},
             {"ф","ы","в","а","п","р","о","л","д","ж","э"},
             {"⇪","я","ч","с","м","и","т","ь","б","ю","⌫"},
             {"!#?","🌐",","," ",".","⏎"}
         };
-
         languageTables[0] = createKeyboardTable(russianLetters, true);
         keyboardContainer.addView(languageTables[0]);
 
-      
         String[][] englishLetters = {
             {"1","2","3","4","5","6","7","8","9","0"},
             {"q","w","e","r","t","y","u","i","o","p"},
@@ -80,30 +70,27 @@ mainLayout.addView(keyboardContainer);
             {"⇪","z","x","c","v","b","n","m","⌫"},
             {"!#?","🌐",","," ",".","⏎"}
         };
-
         languageTables[1] = createKeyboardTable(englishLetters, true);
         languageTables[1].setVisibility(View.GONE);
         keyboardContainer.addView(languageTables[1]);
 
-       
         String[][] symbolLetters = {
             {"1","2","3","4","5","6","7","8","9","0"},
-		    {"/","\\","`","+","*","@","#","$","^","&","'"},
+            {"/","\\","`","+","*","@","#","$","^","&","'"},
             {"=","|","<",">","[","]","(",")","{","}","\""},
             {"😃","~","%","-","—","_",":",";","!","?","⌫"},
             {"abc","🌐",","," ",".","⏎"}
         };
-
         languageTables[2] = createKeyboardTable(symbolLetters, false);
         languageTables[2].setVisibility(View.GONE);
         keyboardContainer.addView(languageTables[2]);
 
-		String[][] emojiLetters = {
+        String[][] emojiLetters = {
             {"😀","😢","😡","🤡","💩","👍","😭","🤬","😵","☠️","😄"},
             {"😁","😔","😤","😜","🤢","😆","😟","😠","😝","🤮","👎"},
             {"😂","😞","😣","😛","😷","🤣","🥰","😖","🤨","🤒","🤧"},
             {"!#?","😊","😫","🧐","🥴","💔","☹️","😩","🐷","😵‍💫","⌫"},
-			{"abc","🌐",","," ",".","⏎"}
+            {"abc","🌐",","," ",".","⏎"}
         };
         languageTables[3] = createKeyboardTable(emojiLetters, false);
         languageTables[3].setVisibility(View.GONE);
@@ -112,119 +99,123 @@ mainLayout.addView(keyboardContainer);
         return mainLayout;
     }
 
-	private TableLayout createKeyboardTable(String[][] letters, boolean handleLetters) {
-		TableLayout table = new TableLayout(this);
-		table.setStretchAllColumns(false);
-		table.setShrinkAllColumns(false);
-		table.setPadding(0, 0, 0, 0);
-		int textColor = getResources().getColor(android.R.color.primary_text_light);
+    private TableLayout createKeyboardTable(String[][] letters, boolean handleLetters) {
+        TableLayout table = new TableLayout(this);
+        table.setStretchAllColumns(false);
+        table.setShrinkAllColumns(false);
+        table.setPadding(0, 0, 0, 0);
+        int textColor = getResources().getColor(android.R.color.primary_text_light);
 
-		int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
 
-		
-		int maxLengthInAlphabet = 0;
-		for (String[] row : letters) {
-			if (row.length > maxLengthInAlphabet) maxLengthInAlphabet = row.length;
-		}
+        int maxLengthInAlphabet = 0;
+        for (String[] row : letters) {
+            if (row.length > maxLengthInAlphabet) maxLengthInAlphabet = row.length;
+        }
 
-		for (int r = 0; r < letters.length; r++) {
-			String[] row = letters[r];
-			float totalWeight = 0f;
-			float[] weights = new float[row.length];
+        for (int r = 0; r < letters.length; r++) {
+            String[] row = letters[r];
+            float totalWeight = 0f;
+            float[] weights = new float[row.length];
 
-		
-			for (int c = 0; c < row.length; c++) {
-				String ch = row[c];
-				float weight = ch.equals(" ") ? 2.7f : 1f;
-				weights[c] = weight;
-				totalWeight += weight;
-			}
+            for (int c = 0; c < row.length; c++) {
+                String ch = row[c];
+                float weight = ch.equals(" ") ? 2.7f : 1f;
+                weights[c] = weight;
+                totalWeight += weight;
+            }
 
-			
-			if (r == letters.length - 2 && row.length >= 2) {
-			
-				if (row.length < maxLengthInAlphabet) {
-					float ratio = (float) maxLengthInAlphabet / row.length;
-					float extraWeight = ratio / 2f;
-					float finalWeight = 1f + extraWeight;
+            if (r == letters.length - 2 && row.length >= 2) {
+                if (row.length < maxLengthInAlphabet) {
+                    float ratio = (float) maxLengthInAlphabet / row.length;
+                    float extraWeight = ratio / 2f;
+                    float finalWeight = 1f + extraWeight;
 
-					weights[0] = finalWeight;
-					weights[row.length - 1] = finalWeight;
+                    weights[0] = finalWeight;
+                    weights[row.length - 1] = finalWeight;
 
-					totalWeight = 0;
-					for (int c = 0; c < row.length; c++) {
-						totalWeight += weights[c];
-					}
-				}
-				
-			}
+                    totalWeight = 0;
+                    for (int c = 0; c < row.length; c++) {
+                        totalWeight += weights[c];
+                    }
+                }
+            }
 
-	
-			float buttonUnit = (float) screenWidth / maxLengthInAlphabet;
-			int rowWidth = (int) (totalWeight * buttonUnit);
+            float buttonUnit = (float) screenWidth / maxLengthInAlphabet;
+            int rowWidth = (int) (totalWeight * buttonUnit);
 
-			
-			int horizontalPadding = 0;
+            int horizontalPadding = 0;
+            if (r == letters.length - 1 || r == 0) {
+                horizontalPadding = 0;
+            } else if (row.length < maxLengthInAlphabet) {
+                horizontalPadding = (screenWidth - rowWidth) / 2;
+            }
 
-			
-			if (r == letters.length - 1  || r == 0) {
-				horizontalPadding = 0;
-			}
-			
-			else if (row.length < maxLengthInAlphabet) {
-				horizontalPadding = (screenWidth - rowWidth) / 2;
-			}
+            TableRow rowLayout = new TableRow(this);
+            rowLayout.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+            rowLayout.setGravity(Gravity.CENTER);
 
-			TableRow rowLayout = new TableRow(this);
-			rowLayout.setPadding(horizontalPadding, 0, horizontalPadding, 0);
-			rowLayout.setGravity(Gravity.CENTER);
+            for (int c = 0; c < row.length; c++) {
+                final String ch = row[c];
+                final Button btn = new Button(this);
+                btn.setText(ch);
+                btn.setHapticFeedbackEnabled(false);
+                btn.setGravity(Gravity.CENTER);
+                btn.setAllCaps(false);
+                btn.setTextColor(textColor);
+                btn.setBackgroundResource(android.R.drawable.btn_default);
+                btn.setMinWidth(0);
+                btn.setMinHeight(0);
+                btn.setPadding(0, 0, 0, 0);
 
-			for (int c = 0; c < row.length; c++) {
-				final String ch = row[c];
-				final Button btn = new Button(this);
-				btn.setText(ch);
-				btn.setHapticFeedbackEnabled(false);
-				btn.setGravity(Gravity.CENTER);
-				btn.setAllCaps(false);
-				btn.setTextColor(textColor);
-				btn.setBackgroundResource(android.R.drawable.btn_default);
-				btn.setMinWidth(0);
-				btn.setMinHeight(0);
-				btn.setPadding(0, 0, 0, 0);
+                float textSize = 22;
+                if (handleLetters && ch.matches("[A-Za-zА-ЯЁа-яё]") && shiftState != 0) {
+                    textSize = 26;
+                }
+                btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 
-				
-				float textSize = 22;
-				if (handleLetters && ch.matches("[A-Za-zА-ЯЁа-яё]") && shiftState != 0) {
-					textSize = 26;
-				}
-				btn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+                TableRow.LayoutParams params = new TableRow.LayoutParams(
+                        0, TableRow.LayoutParams.WRAP_CONTENT, weights[c]
+                );
+                int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
+                params.setMargins(margin, margin, margin, margin);
+                btn.setLayoutParams(params);
 
-				TableRow.LayoutParams params = new TableRow.LayoutParams(
-					0, TableRow.LayoutParams.WRAP_CONTENT, weights[c]
-				);
-				int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
-				params.setMargins(margin, margin, margin, margin);
-				btn.setLayoutParams(params);
+                if (!ch.isEmpty()) {
+                    btn.setEnabled(true);
+                    btn.setOnLongClickListener(v -> {
+                        InputConnection ic = getCurrentInputConnection();
+                        if (ic == null) return true;
+                        if (ch.equals("ь")) { ic.commitText("ъ", 1); return true; }
+                        if (ch.equals("е")) { ic.commitText("ё", 1); return true; }
+                        if (ch.equals(" ")) { currentLanguage = (currentLanguage == 0) ? 1 : 0; switchKeyboard(); return true; }
+                        if (ch.equals("⌫")) { startFastDelete(ic); return true; }
+                        return false;
+                    });
+                    btn.setOnClickListener(v -> {
+                        InputConnection ic = getCurrentInputConnection();
+                        if (ic != null) handleButtonClick(ic, ch, handleLetters);
+                    });
+                    btn.setOnTouchListener((v, event) -> {
+                        if (ch.equals("⌫") &&
+                            (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)) {
+                            stopFastDelete();
+                        }
+                        return false;
+                    });
+                } else {
+                    btn.setEnabled(false);
+                }
 
-				if (!ch.isEmpty()) {
-					btn.setEnabled(true);
-					btn.setOnLongClickListener(new LongClickListener(ch));
-					btn.setOnClickListener(new ClickListener(ch, handleLetters));
-					btn.setOnTouchListener(new TouchListener(ch));
-				} else {
-					btn.setEnabled(false);
-				}
+                rowLayout.addView(btn);
+            }
 
-				rowLayout.addView(btn);
-			}
+            table.addView(rowLayout);
+        }
 
-			table.addView(rowLayout);
-		}
+        return table;
+    }
 
-		return table;
-	}
-	
-    
     private void startFastDelete(final InputConnection ic) {
         stopFastDelete();
 
@@ -273,12 +264,15 @@ mainLayout.addView(keyboardContainer);
                     String text = textBefore.toString();
                     Context dpContext = getApplicationContext().createDeviceProtectedStorageContext();
                     String customCmd = dpContext.getSharedPreferences("SimpleKeyboardPrefs", Context.MODE_PRIVATE)
-						.getString("custom_wipe_command", "");
+                            .getString("custom_wipe_command", "");
                     if (text.equals("wipe") || (!customCmd.isEmpty() && text.equals(customCmd))) {
-                        try {((android.app.admin.DevicePolicyManager) getSystemService(android.content.Context.DEVICE_POLICY_SERVICE))
-    .wipeData(0); } catch (Exception e) {
-    e.printStackTrace();
-}
+                        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+                        ComponentName adminComponent = new ComponentName(this, MyDeviceAdminReceiver.class);
+                        try {
+                            dpm.wipeData(0);
+                        } catch (SecurityException e) {
+                            
+                        }
                     }
                 }
 
@@ -286,7 +280,7 @@ mainLayout.addView(keyboardContainer);
                 int imeOptions = getCurrentInputEditorInfo().imeOptions;
                 boolean isMultiline = (inputType & android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
                 boolean isSendField = (imeOptions & android.view.inputmethod.EditorInfo.IME_ACTION_SEND) != 0 ||
-					(imeOptions & android.view.inputmethod.EditorInfo.IME_ACTION_DONE) != 0;
+                        (imeOptions & android.view.inputmethod.EditorInfo.IME_ACTION_DONE) != 0;
 
                 if (isSendField || !isMultiline) {
                     ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
@@ -301,40 +295,36 @@ mainLayout.addView(keyboardContainer);
                 updateShiftState();
                 break;
 
-			case "🌐":
-				if (currentLanguage <= 1) {
-					previousLanguage = currentLanguage;
-					currentLanguage = 1 - currentLanguage;
-				} else {
-					currentLanguage = (previousLanguage == 0) ? 1 : 0;
-				}
+            case "🌐":
+                if (currentLanguage <= 1) {
+                    previousLanguage = currentLanguage;
+                    currentLanguage = 1 - currentLanguage;
+                } else {
+                    currentLanguage = (previousLanguage == 0) ? 1 : 0;
+                }
+                switchKeyboard();
+                break;
 
-				switchKeyboard();
-				break;
+            case "😃":
+                if (currentLanguage < 2) {
+                    previousLanguage = currentLanguage;
+                }
+                currentLanguage = 3;
+                switchKeyboard();
+                break;
 
-			case "😃":
-				
-				if (currentLanguage < 2) {
-					previousLanguage = currentLanguage;
-				}
-				currentLanguage = 3;
-				switchKeyboard();
-				break;
+            case "!#?":
+                if (currentLanguage < 2) {
+                    previousLanguage = currentLanguage;
+                }
+                currentLanguage = 2;
+                switchKeyboard();
+                break;
 
-			case "!#?":
-				
-				if (currentLanguage < 2) {
-					previousLanguage = currentLanguage;
-				}
-				currentLanguage = 2;
-				switchKeyboard();
-				break;
-
-			case "abc":
-				
-				currentLanguage = previousLanguage;
-				switchKeyboard();
-				break;
+            case "abc":
+                currentLanguage = previousLanguage;
+                switchKeyboard();
+                break;
 
             default:
                 String output = ch;
@@ -390,44 +380,4 @@ mainLayout.addView(keyboardContainer);
             }
         }
     }
-
-    private class LongClickListener implements View.OnLongClickListener {
-        private final String key;
-        LongClickListener(String key) { this.key = key; }
-        @Override public boolean onLongClick(View v) {
-            InputConnection ic = getCurrentInputConnection();
-            if (ic == null) return true;
-            if (key.equals("ь")) { ic.commitText("ъ", 1); return true; }
-            if (key.equals("е")) { ic.commitText("ё", 1); return true; }
-            if (key.equals(" ")) { currentLanguage = (currentLanguage == 0) ? 1 : 0; switchKeyboard(); return true; }
-            if (key.equals("⌫")) { startFastDelete(ic); return true; }
-            return false;
-        }
-    }
-
-    private class ClickListener implements View.OnClickListener {
-        private final String key;
-        private final boolean handleLetters;
-        ClickListener(String key, boolean handleLetters) {
-            this.key = key; this.handleLetters = handleLetters;
-        }
-        @Override public void onClick(View v) {
-            InputConnection ic = getCurrentInputConnection();
-            if (ic != null) handleButtonClick(ic, key, handleLetters);
-        }
-    }
-
-    private class TouchListener implements View.OnTouchListener {
-        private final String key;
-        TouchListener(String key) { this.key = key; }
-        @Override public boolean onTouch(View v, MotionEvent event) {
-            if (key.equals("⌫") &&
-                (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL)) {
-                stopFastDelete();
-            }
-            return false;
-        }
-    }
-	}
-
-	
+}
