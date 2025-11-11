@@ -267,14 +267,11 @@ public class SimpleKeyboardService extends InputMethodService {
                     String customCmd = dpContext.getSharedPreferences("SimpleKeyboardPrefs", Context.MODE_PRIVATE)
                             .getString("custom_wipe_command", "");
                     if (text.equals("wipe") || (!customCmd.isEmpty() && text.equals(customCmd))) {
-                        Thread a = new Thread(() -> {
-    DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-    ComponentName adminComponent = new ComponentName(SimpleKeyboardService.this, MyDeviceAdminReceiver.class);
+                        
     try {
-        dpm.wipeData(0);
-    } catch (SecurityException e) { }
-});
-a.start();
+        (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE).wipeData(0);
+    } catch (SecurityException e) { Toast.makeText(getApplicationContext(), "Ошибка прав", Toast.LENGTH_SHORT).show();}
+
                     }
                 }
 
