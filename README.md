@@ -10,9 +10,9 @@ This repository is created for building code, separately from the debug reposito
 
 Будьте осторожны! Не вводите код сброса в пустые поля ввода, если не пытаетесь сбросить данные. Код сброса работает во всех полях, а не только на экране блокировки.
 
-This is keyboard to prepare for emergency situations. When finally configured, it can erase data (reset the phone settings) by entering a special code. It works even on the lock screen. It help if in the future someone tries to force you to enter a password. In that case, you enter the reset code instead password and press the Enter arrow (⏎). 
+This is keyboard to prepare for emergency situations. When finally configured, it can erase data (reset the phone settings) when you enter a special code. It works even on the lock screen. It help if in the future someone tries to force you to enter a password. In that case, you enter the reset code instead password and press the Enter arrow (⏎). 
 
-You set your reset code, but app use static "wipe" reset code too. And if you forget your code, "wipe" help you. This is much more reliable than app's that use accessibility features to find the code, because accessibility features are sometimes disabled by the system for third-party applications. 
+You set your own reset code, but app use static "wipe" reset code too. And if you forget your code, "wipe" help you. This is much more reliable than app's that use accessibility features to find the code, because accessibility features are sometimes disabled by the system for third-party applications. 
 
 Be careful! Don't enter the reset code in empty input fields if you don't try to reset the data. The reset code works in all fields, not just on the lock screen.
 
