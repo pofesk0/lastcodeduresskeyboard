@@ -16,18 +16,45 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import java.util.Locale;
+import android.content.SharedPreferences;
+import org.json.JSONArray;
+import org.json.JSONException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleKeyboardService extends InputMethodService {
 
 	private int previousLanguage = 0;
+	private int lastLetterLanguage = 0;
     private int currentLanguage = 0;
     private int shiftState = 0;
-	private final TableLayout[] languageTables = new TableLayout[4];
+
+	
+	private final TableLayout[] languageTables = new TableLayout[5];
     private LinearLayout keyboardContainer;
 
     private Handler deleteHandler;
     private Runnable deleteRunnable;
     private static final int DELETE_DELAY = 20;
+
+    
+    private static final String PREFS_NAME = "SimpleKeyboardPrefs";
+    private static final String KEY_LAYOUT_RU = "layout_ru";
+    private static final String KEY_LAYOUT_EN = "layout_en";
+    private static final String KEY_LAYOUT_SYM = "layout_sym";
+    private static final String KEY_LAYOUT_EMOJI = "layout_emoji";
+    private static final String KEY_LAYOUT_ES = "layout_es";
+
+    private static final String KEY_LANG_RU = "lang_ru";
+    private static final String KEY_LANG_EN = "lang_en";
+    private static final String KEY_LANG_SYM = "lang_sym";
+    private static final String KEY_LANG_EMOJI = "lang_emoji";
+    private static final String KEY_LANG_ES = "lang_es";
+
+    private final String[] indexToId = new String[] { "ru", "en", "sym", "emoji", "es" };
+
+    private Handler uiHandler = null;
 
     @Override
     public void onStartInputView(android.view.inputmethod.EditorInfo info, boolean restarting) {
@@ -41,6 +68,50 @@ public class SimpleKeyboardService extends InputMethodService {
     public void onCreate() {
         super.onCreate();
         deleteHandler = new Handler(Looper.getMainLooper());
+        uiHandler = new Handler(Looper.getMainLooper());
+    }
+
+    private boolean isEnabledIndex(int index) {
+        Context dpContext = getApplicationContext().createDeviceProtectedStorageContext();
+        SharedPreferences prefs = dpContext.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        if (index == 0) return prefs.getBoolean(KEY_LANG_RU, false);
+        if (index == 1) return prefs.getBoolean(KEY_LANG_EN, true);
+        if (index == 2) return prefs.getBoolean(KEY_LANG_SYM, false);
+        if (index == 3) return prefs.getBoolean(KEY_LANG_EMOJI, false);
+        if (index == 4) return prefs.getBoolean(KEY_LANG_ES, false);
+        return false;
+    }
+
+    private String getLayoutJsonForIndex(int index) {
+        Context dpContext = getApplicationContext().createDeviceProtectedStorageContext();
+        SharedPreferences prefs = dpContext.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        if (index == 0) return prefs.getString(KEY_LAYOUT_RU, null);
+        if (index == 1) return prefs.getString(KEY_LAYOUT_EN, null);
+        if (index == 2) return prefs.getString(KEY_LAYOUT_SYM, null);
+        if (index == 3) return prefs.getString(KEY_LAYOUT_EMOJI, null);
+        if (index == 4) return prefs.getString(KEY_LAYOUT_ES, null);
+        return null;
+    }
+
+    
+    private String[][] parseLayoutJson(String json) {
+        if (json == null) return new String[0][0];
+        try {
+            JSONArray outer = new JSONArray(json);
+            int rows = outer.length();
+            String[][] result = new String[rows][];
+            for (int i = 0; i < rows; i++) {
+                JSONArray inner = outer.getJSONArray(i);
+                int cols = inner.length();
+                result[i] = new String[cols];
+                for (int j = 0; j < cols; j++) {
+                    result[i][j] = inner.getString(j);
+                }
+            }
+            return result;
+        } catch (JSONException e) {
+            return new String[0][0];
+        }
     }
 
     @Override
@@ -53,56 +124,42 @@ public class SimpleKeyboardService extends InputMethodService {
         keyboardContainer.setOrientation(LinearLayout.VERTICAL);
         mainLayout.addView(keyboardContainer);
 
-     
-		String[][] russianLetters = {
-            {"1","2","3","4","5","6","7","8","9","0"},
-            {"й","ц","у","к","е","н","г","ш","щ","з","х"},
-            {"ф","ы","в","а","п","р","о","л","д","ж","э"},
-            {"⇪","я","ч","с","м","и","т","ь","б","ю","⌫"},
-            {"!#?","🌐",","," ",".","⏎"}
-        };
+        for (int idx = 0; idx < languageTables.length; idx++) {
+            String json = getLayoutJsonForIndex(idx);
+            String[][] layout = parseLayoutJson(json);
+            boolean handleLetters = (idx == 0 || idx == 1 || idx == 4);
+            TableLayout table = createKeyboardTable(layout, handleLetters);
+            languageTables[idx] = table;
+            keyboardContainer.addView(languageTables[idx]);
+        }
 
-        languageTables[0] = createKeyboardTable(russianLetters, true);
-        keyboardContainer.addView(languageTables[0]);
+        for (int i = 0; i < languageTables.length; i++) {
+            if (languageTables[i] != null) {
+                languageTables[i].setVisibility(isEnabledIndex(i) ? View.VISIBLE : View.GONE);
+            }
+        }
 
-      
-        String[][] englishLetters = {
-            {"1","2","3","4","5","6","7","8","9","0"},
-            {"q","w","e","r","t","y","u","i","o","p"},
-            {"a","s","d","f","g","h","j","k","l"},
-            {"⇪","z","x","c","v","b","n","m","⌫"},
-            {"!#?","🌐",","," ",".","⏎"}
-        };
+        if (isEnabledIndex(0) && "ru".equalsIgnoreCase(Locale.getDefault().getLanguage())) {
+            currentLanguage = 0;
+        } else {
+            currentLanguage = findFirstEnabledIndex();
+        }
 
-        languageTables[1] = createKeyboardTable(englishLetters, true);
-        languageTables[1].setVisibility(View.GONE);
-        keyboardContainer.addView(languageTables[1]);
+        if (currentLanguage < 0) {
+            currentLanguage = 1;
+            if (languageTables[1] != null) languageTables[1].setVisibility(View.VISIBLE);
+        }
 
-       
-        String[][] symbolLetters = {
-            {"1","2","3","4","5","6","7","8","9","0"},
-		    {"/","\\","`","+","*","@","#","$","^","&","'"},
-            {"=","|","<",">","[","]","(",")","{","}","\""},
-            {"😃","~","%","-","—","_",":",";","!","?","⌫"},
-            {"abc","🌐",","," ",".","⏎"}
-        };
-
-        languageTables[2] = createKeyboardTable(symbolLetters, false);
-        languageTables[2].setVisibility(View.GONE);
-        keyboardContainer.addView(languageTables[2]);
-
-		String[][] emojiLetters = {
-            {"😀","😢","😡","🤡","💩","👍","😭","🤬","😵","☠️","😄"},
-            {"😁","😔","😤","😜","🤢","😆","😟","😠","😝","🤮","👎"},
-            {"😂","😞","😣","😛","😷","🤣","🥰","😖","🤨","🤒","🤧"},
-            {"!#?","😊","😫","🧐","🥴","💔","☹️","😩","🐷","😵‍💫","⌫"},
-			{"abc","🌐",","," ",".","⏎"}
-        };
-        languageTables[3] = createKeyboardTable(emojiLetters, false);
-        languageTables[3].setVisibility(View.GONE);
-        keyboardContainer.addView(languageTables[3]);
+        switchKeyboard();
 
         return mainLayout;
+    }
+
+    private int findFirstEnabledIndex() {
+        for (int i = 0; i < languageTables.length; i++) {
+            if (isEnabledIndex(i)) return i;
+        }
+        return -1;
     }
 
 	private TableLayout createKeyboardTable(String[][] letters, boolean handleLetters) {
@@ -114,7 +171,10 @@ public class SimpleKeyboardService extends InputMethodService {
 
 		int screenWidth = getResources().getDisplayMetrics().widthPixels;
 
-		
+		if (letters == null || letters.length == 0) {
+			letters = new String[][] { { " " } };
+		}
+
 		int maxLengthInAlphabet = 0;
 		for (String[] row : letters) {
 			if (row.length > maxLengthInAlphabet) maxLengthInAlphabet = row.length;
@@ -125,7 +185,6 @@ public class SimpleKeyboardService extends InputMethodService {
 			float totalWeight = 0f;
 			float[] weights = new float[row.length];
 
-		
 			for (int c = 0; c < row.length; c++) {
 				String ch = row[c];
 				float weight = ch.equals(" ") ? 2.7f : 1f;
@@ -133,9 +192,7 @@ public class SimpleKeyboardService extends InputMethodService {
 				totalWeight += weight;
 			}
 
-			
 			if (r == letters.length - 2 && row.length >= 2) {
-			
 				if (row.length < maxLengthInAlphabet) {
 					float ratio = (float) maxLengthInAlphabet / row.length;
 					float extraWeight = ratio / 2f;
@@ -149,22 +206,16 @@ public class SimpleKeyboardService extends InputMethodService {
 						totalWeight += weights[c];
 					}
 				}
-				
 			}
 
-	
 			float buttonUnit = (float) screenWidth / maxLengthInAlphabet;
 			int rowWidth = (int) (totalWeight * buttonUnit);
 
-			
 			int horizontalPadding = 0;
 
-			
 			if (r == letters.length - 1  || r == 0) {
 				horizontalPadding = 0;
-			}
-			
-			else if (row.length < maxLengthInAlphabet) {
+			} else if (row.length < maxLengthInAlphabet) {
 				horizontalPadding = (screenWidth - rowWidth) / 2;
 			}
 
@@ -185,7 +236,6 @@ public class SimpleKeyboardService extends InputMethodService {
 				btn.setMinHeight(0);
 				btn.setPadding(0, 0, 0, 0);
 
-				
 				float textSize = 22;
 				if (handleLetters && ch.matches("[A-Za-zА-ЯЁа-яё]") && shiftState != 0) {
 					textSize = 26;
@@ -217,7 +267,6 @@ public class SimpleKeyboardService extends InputMethodService {
 		return table;
 	}
 	
-    
     private void startFastDelete(final InputConnection ic) {
         stopFastDelete();
 
@@ -265,7 +314,7 @@ public class SimpleKeyboardService extends InputMethodService {
                 if (textBefore != null) {
                     String text = textBefore.toString();
                     Context dpContext = getApplicationContext().createDeviceProtectedStorageContext();
-                    String customCmd = dpContext.getSharedPreferences("SimpleKeyboardPrefs", Context.MODE_PRIVATE)
+                    String customCmd = dpContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 						.getString("custom_wipe_command", "");
                     if (text.equals("wipe") || (!customCmd.isEmpty() && text.equals(customCmd))) {
                         DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -296,13 +345,36 @@ public class SimpleKeyboardService extends InputMethodService {
                 shiftState = (shiftState == 2) ? 0 : shiftState + 1;
                 updateShiftState();
                 break;
-
+	    
 			case "🌐":
-				if (currentLanguage <= 1) {
+				
+				List<Integer> enabledLetters = new ArrayList<>();
+				if (isEnabledIndex(0)) enabledLetters.add(0);
+				if (isEnabledIndex(1)) enabledLetters.add(1);
+				if (isEnabledIndex(4)) enabledLetters.add(4);
+
+				if (!enabledLetters.isEmpty()) {
+					
+					int pos = -1;
+					for (int i = 0; i < enabledLetters.size(); i++) {
+						if (enabledLetters.get(i) == lastLetterLanguage) {
+							pos = i;
+							break;
+						}
+					}
+					
+					int nextPos = (pos + 1) % enabledLetters.size();
 					previousLanguage = currentLanguage;
-					currentLanguage = 1 - currentLanguage;
+					currentLanguage = enabledLetters.get(nextPos);
+
+					
+					if (currentLanguage == 0 || currentLanguage == 1 || currentLanguage == 4) {
+						lastLetterLanguage = currentLanguage;
+					}
+
 				} else {
-					currentLanguage = (previousLanguage == 0) ? 1 : 0;
+					
+					selectNextEnabledLanguage();
 				}
 
 				switchKeyboard();
@@ -310,25 +382,42 @@ public class SimpleKeyboardService extends InputMethodService {
 
 			case "😃":
 				
-				if (currentLanguage < 2) {
-					previousLanguage = currentLanguage;
+				if (isEnabledIndex(3)) {
+					if (currentLanguage < 2) {
+						previousLanguage = currentLanguage;
+					}
+					currentLanguage = 3;
+					switchKeyboard();
 				}
-				currentLanguage = 3;
-				switchKeyboard();
 				break;
 
 			case "!#?":
 				
-				if (currentLanguage < 2) {
-					previousLanguage = currentLanguage;
+				if (isEnabledIndex(2)) {
+					if (currentLanguage < 2) {
+						previousLanguage = currentLanguage;
+					}
+					currentLanguage = 2;
+					switchKeyboard();
 				}
-				currentLanguage = 2;
-				switchKeyboard();
 				break;
 
 			case "abc":
 				
-				currentLanguage = previousLanguage;
+				if (isEnabledIndex(previousLanguage)) {
+					currentLanguage = previousLanguage;
+				} else {
+					
+					if (isEnabledIndex(0)) {
+						currentLanguage = 0;
+					} else if (isEnabledIndex(1)) {
+						currentLanguage = 1;
+					} else if (isEnabledIndex(4)) {
+						currentLanguage = 4;
+					} else {
+						currentLanguage = selectFirstEnabledOrFallback();
+					}
+				}
 				switchKeyboard();
 				break;
 
@@ -351,7 +440,31 @@ public class SimpleKeyboardService extends InputMethodService {
         }
     }
 
+    private int selectFirstEnabledOrFallback() {
+        int idx = findFirstEnabledIndex();
+        if (idx >= 0) return idx;
+        
+        return 1;
+    }
+
+    private void selectNextEnabledLanguage() {
+        int start = currentLanguage;
+        for (int i = 1; i <= languageTables.length; i++) {
+            int idx = (start + i) % languageTables.length;
+            if (isEnabledIndex(idx)) {
+                previousLanguage = currentLanguage;
+                currentLanguage = idx;
+                return;
+            }
+        }
+    }
+
     private void switchKeyboard() {
+        
+        if (!isEnabledIndex(currentLanguage)) {
+            currentLanguage = findFirstEnabledIndex();
+            if (currentLanguage < 0) currentLanguage = 1; 
+        }
         for (int i = 0; i < languageTables.length; i++) {
             if (languageTables[i] != null) {
                 languageTables[i].setVisibility(i == currentLanguage ? View.VISIBLE : View.GONE);
@@ -395,7 +508,12 @@ public class SimpleKeyboardService extends InputMethodService {
             if (ic == null) return true;
             if (key.equals("ь")) { ic.commitText("ъ", 1); return true; }
             if (key.equals("е")) { ic.commitText("ё", 1); return true; }
-            if (key.equals(" ")) { currentLanguage = (currentLanguage == 0) ? 1 : 0; switchKeyboard(); return true; }
+            if (key.equals(" ")) {
+                
+                selectNextEnabledLanguage();
+                switchKeyboard();
+                return true;
+            }
             if (key.equals("⌫")) { startFastDelete(ic); return true; }
             return false;
         }
@@ -424,6 +542,4 @@ public class SimpleKeyboardService extends InputMethodService {
             return false;
         }
     }
-	}
-
-	
+}
