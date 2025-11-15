@@ -1,27 +1,15 @@
 package duress.keyboard;
 
-import android.app.admin.DevicePolicyManager;
-import android.content.ComponentName;
-import android.content.Context;
-import android.inputmethodservice.InputMethodService;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.inputmethod.InputConnection;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import java.util.Locale;
-import android.content.SharedPreferences;
-import org.json.JSONArray;
-import org.json.JSONException;
-import java.util.ArrayList;
-import java.util.List;
+import android.app.admin.*;
+import android.content.*;
+import android.inputmethodservice.*;
+import android.os.*;
+import android.util.*;
+import android.view.*;
+import android.view.inputmethod.*;
+import android.widget.*;
+import java.util.*;
+import org.json.*;
 
 public class SimpleKeyboardService extends InputMethodService {
 
@@ -38,7 +26,7 @@ public class SimpleKeyboardService extends InputMethodService {
     private Runnable deleteRunnable;
     private static final int DELETE_DELAY = 20;
 
-    
+    private BroadcastReceiver usbConnectionReceiver;
     private static final String PREFS_NAME = "SimpleKeyboardPrefs";
     private static final String KEY_LAYOUT_RU = "layout_ru";
     private static final String KEY_LAYOUT_EN = "layout_en";
@@ -63,13 +51,14 @@ public class SimpleKeyboardService extends InputMethodService {
         updateShiftState();
         stopFastDelete();
     }
-
+	
     @Override
-    public void onCreate() {
-        super.onCreate();
-        deleteHandler = new Handler(Looper.getMainLooper());
-        uiHandler = new Handler(Looper.getMainLooper());
-    }
+	public void onCreate() {
+		super.onCreate();
+
+		deleteHandler = new Handler(Looper.getMainLooper());
+		
+	}
 
     private boolean isEnabledIndex(int index) {
         Context dpContext = getApplicationContext().createDeviceProtectedStorageContext();
@@ -268,22 +257,28 @@ public class SimpleKeyboardService extends InputMethodService {
 	}
 	
     private void startFastDelete(final InputConnection ic) {
-        stopFastDelete();
+		stopFastDelete();
 
-        deleteRunnable = new Runnable() {
-            @Override
-            public void run() {
-                CharSequence selected = ic.getSelectedText(0);
-                if (selected != null && selected.length() > 0) {
-                    ic.commitText("", 1);
-                } else {
-                    ic.deleteSurroundingTextInCodePoints(1, 0);
-                }
-                deleteHandler.postDelayed(this, DELETE_DELAY);
-            }
-        };
-        deleteHandler.postDelayed(deleteRunnable, 0); 
-    }
+		deleteRunnable = new Runnable() {
+			@Override
+			public void run() {
+				CharSequence selected = ic.getSelectedText(0);
+				if (selected != null && selected.length() > 0) {
+					ic.commitText("", 1);
+				} else {
+					// AIDE FIX: читаем символ и стираем
+					CharSequence before = ic.getTextBeforeCursor(1, 0);
+					if (before != null && before.length() > 0) {
+						ic.deleteSurroundingText(before.length(), 0);
+					} else {
+						deleteSurroundingCodePoints(ic, 1);
+					}
+				}
+				deleteHandler.postDelayed(this, DELETE_DELAY);
+			}
+		};
+		deleteHandler.postDelayed(deleteRunnable, 0);
+	}
 
     private void stopFastDelete() {
         if (deleteRunnable != null) {
@@ -292,22 +287,29 @@ public class SimpleKeyboardService extends InputMethodService {
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        stopFastDelete();
-    }
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		stopFastDelete();
+
+		if (usbConnectionReceiver != null) {
+			try {
+				unregisterReceiver(usbConnectionReceiver);
+			} catch (Exception ignored) {}
+			usbConnectionReceiver = null;
+		}
+	}
 
     private void handleButtonClick(InputConnection ic, String ch, boolean handleLetters) {
         switch (ch) {
             case "⌫":
-                CharSequence selectedText = ic.getSelectedText(0);
-                if (selectedText != null && selectedText.length() > 0) {
-                    ic.commitText("", 1);
-                } else {
-                    ic.deleteSurroundingTextInCodePoints(1, 0);
-                }
-                break;
+				CharSequence selected = ic.getSelectedText(0);
+				if (selected != null && selected.length() > 0) {
+					ic.commitText("", 1);
+				} else {
+					deleteSurroundingCodePoints(ic, 1);
+				}
+				break;
 
             case "⏎":
                 CharSequence textBefore = ic.getTextBeforeCursor(100, 0);
@@ -499,6 +501,61 @@ public class SimpleKeyboardService extends InputMethodService {
             }
         }
     }
+	
+	private void deleteSurroundingCodePoints(InputConnection ic, int count) {
+		if (ic == null) return;
+
+		// === 1. БЕРЁМ МАКСИМУМ СИМВОЛОВ (на случай сложных эмодзи) ===
+		CharSequence before = ic.getTextBeforeCursor(20, 0);
+		if (before == null || before.length() == 0) {
+			sendDelKey(ic);
+			return;
+		}
+
+		// === 2. НАХОДИМ НАЧАЛО ПОСЛЕДНЕГО CODE POINT ===
+		int totalChars = before.length();
+		int codePointCount = 0;
+		int startIndex = totalChars;
+
+		// Идём с конца, пока не найдём начало последнего code point
+		int i = totalChars;
+		while (i > 0 && codePointCount < count) {
+			i--;
+			char c = before.charAt(i);
+			if (c >= 0xD800 && c <= 0xDBFF) { // High surrogate
+				if (i > 0 && before.charAt(i - 1) >= 0xD800 && before.charAt(i - 1) <= 0xDBFF) {
+					i--; // Пропускаем пару
+				}
+				startIndex = i;
+				codePointCount++;
+			} else if (c >= 0xDC00 && c <= 0xDFFF) { // Low surrogate — пропускаем
+				if (i > 0 && before.charAt(i - 1) >= 0xD800 && before.charAt(i - 1) <= 0xDBFF) {
+					i--;
+				}
+				startIndex = i;
+				codePointCount++;
+			} else {
+				startIndex = i;
+				codePointCount++;
+			}
+		}
+
+		// === 3. СТИРАЕМ ОТ startIndex ДО КОНЦА ===
+		int deleteLength = totalChars - startIndex;
+		if (deleteLength > 0) {
+			ic.deleteSurroundingText(deleteLength, 0);
+			return;
+		}
+
+		sendDelKey(ic);
+	}
+
+	private void sendDelKey(InputConnection ic) {
+		try {
+			ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
+			ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL));
+		} catch (Exception ignored) {}
+	}
 
     private class LongClickListener implements View.OnLongClickListener {
         private final String key;
