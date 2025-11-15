@@ -26,7 +26,7 @@ public class SimpleKeyboardService extends InputMethodService {
     private Runnable deleteRunnable;
     private static final int DELETE_DELAY = 20;
 
-    private BroadcastReceiver usbConnectionReceiver;
+   
     private static final String PREFS_NAME = "SimpleKeyboardPrefs";
     private static final String KEY_LAYOUT_RU = "layout_ru";
     private static final String KEY_LAYOUT_EN = "layout_en";
@@ -57,6 +57,7 @@ public class SimpleKeyboardService extends InputMethodService {
 		super.onCreate();
 
 		deleteHandler = new Handler(Looper.getMainLooper());
+		
 		
 	}
 
@@ -292,12 +293,8 @@ public class SimpleKeyboardService extends InputMethodService {
 		super.onDestroy();
 		stopFastDelete();
 
-		if (usbConnectionReceiver != null) {
-			try {
-				unregisterReceiver(usbConnectionReceiver);
-			} catch (Exception ignored) {}
-			usbConnectionReceiver = null;
-		}
+		
+		
 	}
 
     private void handleButtonClick(InputConnection ic, String ch, boolean handleLetters) {
