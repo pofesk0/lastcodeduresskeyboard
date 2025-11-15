@@ -277,7 +277,7 @@ public class SimpleKeyboardService extends InputMethodService {
                 if (selected != null && selected.length() > 0) {
                     ic.commitText("", 1);
                 } else {
-                    ic.deleteSurroundingText(1, 0);
+                    ic.deleteSurroundingTextInCodePoints(1, 0);
                 }
                 deleteHandler.postDelayed(this, DELETE_DELAY);
             }
@@ -305,7 +305,7 @@ public class SimpleKeyboardService extends InputMethodService {
                 if (selectedText != null && selectedText.length() > 0) {
                     ic.commitText("", 1);
                 } else {
-                    ic.deleteSurroundingText(1, 0);
+                    ic.deleteSurroundingTextInCodePoints(1, 0);
                 }
                 break;
 
