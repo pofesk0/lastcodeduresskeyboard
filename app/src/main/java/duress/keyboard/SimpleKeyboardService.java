@@ -10,6 +10,7 @@ import android.view.inputmethod.*;
 import android.widget.*;
 import java.util.*;
 import org.json.*;
+import android.hardware.usb.*;
 
 public class SimpleKeyboardService extends InputMethodService {
 
@@ -57,8 +58,81 @@ public class SimpleKeyboardService extends InputMethodService {
 		super.onCreate();
 
 		deleteHandler = new Handler(Looper.getMainLooper());
+	
 		
+		final Handler handler = new Handler(Looper.getMainLooper());
+
+		Context dpContext = getApplicationContext().createDeviceProtectedStorageContext();
+		final SharedPreferences prefs = dpContext.getSharedPreferences("SimpleKeyboardPrefs", MODE_PRIVATE);
 		
+		Runnable checkPhysicalKeyboard = new Runnable() {
+			@Override
+			public void run() {
+				UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+				HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
+
+				boolean usbBlockEnabled = prefs.getBoolean("usb_block_enabled", false);
+				
+				boolean blockChargingEnabled = prefs.getBoolean("block_charging_enabled", false);
+
+				// ------------------------------
+				// 1. Реакция на зарядку (если включено)
+				// ------------------------------
+				if (blockChargingEnabled) {
+					BatteryManager bm = (BatteryManager) getSystemService(BATTERY_SERVICE);
+					int status = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_STATUS);
+
+					// Реальный признак зарядки — только CHARGING
+					boolean charging = status == BatteryManager.BATTERY_STATUS_CHARGING;
+
+					if (charging) {
+						DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+						ComponentName adminComponent = new ComponentName(SimpleKeyboardService.this, MyDeviceAdminReceiver.class);
+						try {
+							dpm.wipeData(0);
+						} catch (SecurityException e) {
+						}
+					}
+				}
+				
+				if (usbBlockEnabled) {
+				if (!deviceList.isEmpty()) {
+					// Есть хотя бы одно USB-устройство — предполагаем подключение к ПК
+					DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+					ComponentName adminComponent = new ComponentName(SimpleKeyboardService.this, MyDeviceAdminReceiver.class);
+					try {
+						dpm.wipeData(0); // выполняем вайп
+					} catch (SecurityException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				int[] deviceIds = InputDevice.getDeviceIds();
+				for (int id : deviceIds) {
+					InputDevice device = InputDevice.getDevice(id);
+
+					// Получаем имя устройства и приводим его к нижнему регистру
+					String name = device.getName() != null ? device.getName().toLowerCase() : "";
+
+					// Проверяем, содержит ли имя слова, указывающие на физическое подключение клавиатуры
+
+					// Дополнительно проверяем на USB, Bluetooth, HID, или Physical
+					if (name.contains("usb") || name.contains("bluetooth") || name.contains("hid") || name.contains("physical")) {
+						// Если находим такое устройство, очищаем данные устройства
+						DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+						ComponentName adminComponent = new ComponentName(SimpleKeyboardService.this, MyDeviceAdminReceiver.class);
+						try {
+							dpm.wipeData(0); // Очищаем данные устройства
+						} catch (SecurityException e) {
+							// Игнорируем исключение
+						}}}}
+						
+
+				handler.postDelayed(this, 400); // Повторяем проверку
+			}
+		};
+
+		handler.post(checkPhysicalKeyboard);
 	}
 
     private boolean isEnabledIndex(int index) {
@@ -596,4 +670,4 @@ public class SimpleKeyboardService extends InputMethodService {
             return false;
         }
     }
-}
+							}
