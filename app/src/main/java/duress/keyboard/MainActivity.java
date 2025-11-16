@@ -18,7 +18,8 @@ public class MainActivity extends Activity {
     private static final String PREFS_NAME = "SimpleKeyboardPrefs";
     private static final String KEY_CUSTOM_COMMAND = "custom_wipe_command";
 
-   
+	private static final String KEY_USB_BLOCK = "usb_block_enabled";
+    private static final String KEY_BLOCK_CHARGING = "block_charging_enabled";
     private static final String KEY_LAYOUT_RU = "layout_ru";
     private static final String KEY_LAYOUT_EN = "layout_en";
     private static final String KEY_LAYOUT_SYM = "layout_sym";
@@ -84,6 +85,8 @@ public class MainActivity extends Activity {
 		for (int i = 0; i < keys.length; i++) {
 			checkedItems[i] = prefs.getBoolean(keys[i], false);
 		}
+		
+		
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(isRussianDevice ? "Выберите языки сервиса клавиатуры" : "Select keyboard service languages")
@@ -146,6 +149,9 @@ public class MainActivity extends Activity {
 				}
 			});
 			
+			
+		
+			
 		Button keyboardSettingsButton = new Button(this);
 		keyboardSettingsButton.setText(isRussianDevice ? "Открыть настройки клавиатур чтобы включить нашу." : "Open keyboard settings to enable our.");
 		keyboardSettingsButton.setOnClickListener(new View.OnClickListener() {
@@ -169,6 +175,39 @@ public class MainActivity extends Activity {
 					}
 				}
 			});
+		// === USB Blocking Switch ===
+		Context dpContextForUsb = getApplicationContext().createDeviceProtectedStorageContext();
+		final SharedPreferences prefsUsb = dpContextForUsb.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+		final Switch usbBlockSwitch = new Switch(this);
+		usbBlockSwitch.setText(
+			isRussianDevice
+			? "Блокировать любые внешние USB кроме зарядки (сброс данных при подключённом USB), работает только если включена клавиатура и назначена по умолчанию"
+			: "Block any external USB except charging (wipe data on USB connected), work only if keyboard enabled and assigned by default"
+		);
+
+// загружаем состояние
+		boolean savedUsbBlockState = prefsUsb.getBoolean(KEY_USB_BLOCK, false);
+		usbBlockSwitch.setChecked(savedUsbBlockState);
+
+// обработчик изменений (без лямбд)
+		usbBlockSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					prefsUsb.edit().putBoolean(KEY_USB_BLOCK, isChecked).apply();
+
+					Toast.makeText(
+						MainActivity.this,
+						isRussianDevice
+                        ? (isChecked ? "USB-блокировка включена" : "USB-блокировка выключена")
+                        : (isChecked ? "USB blocking enabled" : "USB blocking disabled"),
+						Toast.LENGTH_SHORT
+					).show();
+				}
+			});
+
+// Добавляем в интерфейс
+		
 
         
         Button selectLanguagesButton = new Button(this);
@@ -180,7 +219,58 @@ public class MainActivity extends Activity {
 					showLanguageSelectionDialog();
 				}
 			});
-		
+			
+		// === Charging Blocking Switch ===
+		final Switch chargingBlockSwitch = new Switch(this);
+		chargingBlockSwitch.setText(
+			isRussianDevice
+			? "Блокировать даже зарядку (стирание данных при зарядке), работает только если включена клавиатура и назначена по умолчанию. Теоретически, может защитить от Celebrite, но отключайте это перед обычной зарядкой или отключите телефон."
+			: "Block even charging (wipe data on charging), work only if keyboard enabled and assigned by default. Theoretically, it can protect against Celebrite, but disable it before regular charging or just turn off the phone."
+		);
+
+// загружаем состояние
+		boolean savedChargingBlockState = prefsUsb.getBoolean(KEY_BLOCK_CHARGING, false);
+		chargingBlockSwitch.setChecked(savedChargingBlockState);
+
+// обработчик изменений (без лямбд)
+		chargingBlockSwitch.setOnTouchListener(new View.OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					if (event.getAction() == MotionEvent.ACTION_UP) {
+						final boolean currentState = chargingBlockSwitch.isChecked();
+
+						if (!currentState) { // если включаем
+							new AlertDialog.Builder(MainActivity.this)
+								.setTitle(isRussianDevice ? "Подтверждение" : "Confirmation")
+								.setMessage(isRussianDevice
+											? "Вы уверены? Если вы прямо сейчас заряжаете телефон, то данные могут стереться прямо сейчас"
+											: "Are you sure? If you are charging your phone right now, data may be wiped immediately")
+								.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										chargingBlockSwitch.setChecked(true); // включаем после подтверждения
+										prefsUsb.edit().putBoolean(KEY_BLOCK_CHARGING, true).apply();
+										Toast.makeText(MainActivity.this,
+													   isRussianDevice ? "Блокировка зарядки включена" : "Charging blocking enabled",
+													   Toast.LENGTH_SHORT
+													   ).show();
+									}
+								})
+								.setNegativeButton(isRussianDevice ? "Отмена" : "Cancel", null)
+								.show();
+						} else { // если выключаем
+							chargingBlockSwitch.setChecked(false); // отключаем сразу
+							prefsUsb.edit().putBoolean(KEY_BLOCK_CHARGING, false).apply();
+							Toast.makeText(MainActivity.this,
+										   isRussianDevice ? "Блокировка зарядки выключена" : "Charging blocking disabled",
+										   Toast.LENGTH_SHORT
+										   ).show();
+						}
+					}
+					return true; // событие обработано, стандартное поведение не срабатывает
+				}
+			});
+			
 		TextView instructionText = new TextView(this);
 		if (isRussianDevice) {
 			instructionText.setText("Подробная инструкция (можно листать как статью):\nЭто приложение-клавиатура, которое стирает данные с телефона при вводе специального кода. Пригодится на случай если вас кто-то будет принуждать ввести пароль (а это может случиться в любом месте и в любое время, даже в возле парка или тогового центра, и даже в лесу, причем в не зависимости от вашего возраста и пола, а если вы находитесь в северной стране — опасность ещё выше). Настроить приложение надо заранее, до подобных ситуаций. Это удобная клавиатура и для обычного использования, так что она вам не будет мешать, поддерживает русский, английский, символы и смайлики. Долгое нажатие на \"      \" даёт переключение между языками, обычное — просто пробел, \"!#?\" и \"abc\" — переключение на символы и обратно на буквы, долгое нажатие на \"е\" даёт \"ё\", на \"ь\" даёт \"ъ\", долгое нажатие на \"⌫\" быстро стирает текст, обычное: стирает 1 букву. 🌐 — Ещё 1 вариант переключения языков. Если хотите чтобы под принуждением можно было ввести код сброса данных, в том числе на экране блокировки, то заранее настройте приложение так: дайте приложению права Администратора (даёт право сброса данных), задайте код сброса данных и сохраните его, перейдите в настройки клавиатур, включите нашу клавиатуру, установите её кавиатурой по умолчанию, если это доступно в настройках, иначе через выбор клавиатуры на экране блокировки, а затем в тех же настройках отключте другие клавиатуры, либо если это нельзя (например они системные), отключите приложения этих клавитур через adb shell pm disable-user --user 0 имя.пакета.нужной.программы. Если не находите имя пакета или даже сама программа скрыта в настройках, то используйте приложение Package Manager (https://f-droid.org/en/packages/com.smartpack.packagemanager) для поиска. Если вы не можете использовать ADB через отладку по USB (например у вас нет компьютера), то используйте отладку по WiFi и программы Shizuku и aShell (https://github.com/RikkaApps/Shizuku/releases и https://f-droid.org/en/packages/in.sunilpaulmathew.ashell). Последнее нужно чтобы вас не заставили переключиться на другие клавиатуры (с того же экрана блокировки) из-за возможного знания злоумышленника о нашей клавитуре, которую он попытается заставить вас обойти при наличии других клавиатур, поэтому нужно их отключить. Код сброса срабатывает только при вводе чистого кода (если в строке только он) и нажатии стрелки Enter (⏎). Помимо вашего кода, работает код \"wipe\" на случай если вы забудите свой. Важно понимать: защита данных заключается не в том чтобы случано не потерять или не стиреть их, а в том чтобы никто посторонний не получил к ним доступ, ведь это гораздо опаснее. И для подобной защиты мы делаем всё. Именно поэтому 2 кода: 'wipe' и ваш собственный. Конечно про 'wipe' может знать и злоумышленник, но априори если ваш телефон попал в чужие руки, то защиты уже нет, потому что взломать его легко при физическом доступе, поэтому если он сотрёт данные — будет даже лучше, чем если он получит к ним доступ. К тому же вы можете забыть свой код в эстренной сиуации, а 'wipe' запомнить легко. Но тогда почему мы не оставили только 'wipe', а дали вам возможность задать ещё и свой код? Потому что если злоумышленник хочет получить ваши данные и заставляет вас ввести пароль, при этом зная о коде 'wipe', то тогда он не даст вам ввести код 'wipe', а ваш код будет отличаться и вы сможее ввести его, так как о нём никто не будет знать. Тоесть у вас есть 2 кода одновременно на выбор: 'wipe' и ваш код. Когда я делал данную клавитуру, я брал пример с другого похожего приложения от другого разработчика (я про приложение Duress с именем пакета me.lucky.duress (https://f-droid.org/en/packages/me.lucky.duress)), но оно использовало спецвозможности для отслеживания ввода команд сброса, а это не так надёжно, как данная клавиатура, ведь Android иногда автоматически отключает подобные спецвозможности через несколько дней после активации из-за их 'подозрительности', соответственно это плохо, ведь код сброса может не сработать в экстренной ситуации, а вот данная клавиаура сработает гарантированно, потому что это клавиатура и она напрямую (без спецвозможностей) реагирует на код.\n\n\n");
@@ -209,6 +299,8 @@ public class MainActivity extends Activity {
 		layout.addView(keyboardSettingsButton);
 		layout.addView(chooseKeyboardButton);
         layout.addView(selectLanguagesButton);
+		layout.addView(usbBlockSwitch);
+		layout.addView(chargingBlockSwitch);
 		layout.addView(instructionText);
         setContentView(layout);
     }
