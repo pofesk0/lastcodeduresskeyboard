@@ -1,12 +1,10 @@
-// Файл: /build.gradle (ОКОНЧАТЕЛЬНО ОБНОВЛЕННЫЙ)
-
 buildscript {
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        // УСТАНОВИТЕ АКТУАЛЬНУЮ ВЕРСИЮ для поддержки SDK 36
+        
         classpath 'com.android.tools.build:gradle:7.4.0' 
     }
 }
