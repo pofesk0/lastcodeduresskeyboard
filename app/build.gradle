@@ -5,7 +5,7 @@ id 'com.android.application'
 
 android {
 namespace "duress.keyboard"
-compileSdk 29
+compileSdk 21
 
 lint {
         checkReleaseBuilds false
