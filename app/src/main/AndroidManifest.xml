@@ -42,7 +42,6 @@
 			android:directBootAware="true"
 			android:exported="true"
 			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
-			android:showOnLockScreen="true"
 			android:showWhenLocked="true"
 			android:turnScreenOn="true"
 			android:excludeFromRecents="true"
