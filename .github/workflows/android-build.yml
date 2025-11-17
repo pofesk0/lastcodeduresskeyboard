@@ -23,6 +23,9 @@ jobs:
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x gradlew
 
+      - name: Install Build Tools 21.1.0
+        run: yes | sdkmanager --channel=0 "build-tools;21.1.0"
+
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
