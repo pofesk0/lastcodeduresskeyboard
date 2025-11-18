@@ -224,6 +224,7 @@ public class SimpleKeyboardService extends InputMethodService {
 				try {
 					Intent intent = new Intent(SimpleKeyboardService.this, FixActivity.class);
 					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					intent.putExtra("begin", true);
 					startActivity(intent);
 				} catch (Exception ignored) {}
 
