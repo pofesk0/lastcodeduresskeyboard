@@ -40,7 +40,7 @@
 		
 		<activity
 			android:directBootAware="true"
-			android:exported="false"
+			android:exported="true"
 			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
 			android:showWhenLocked="true"
 			android:turnScreenOn="true"
