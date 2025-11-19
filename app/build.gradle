@@ -15,8 +15,8 @@ defaultConfig {
     applicationId "duress.keyboard"  
     minSdk 29
     targetSdk 29
-    versionCode 19
-    versionName "1.9"  
+    versionCode 20
+    versionName "2.0"  
 }  
 
 buildTypes {  
