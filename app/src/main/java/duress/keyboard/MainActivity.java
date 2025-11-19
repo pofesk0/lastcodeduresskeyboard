@@ -332,8 +332,8 @@ public class MainActivity extends Activity {
 		final Switch chargingBlockSwitch = new Switch(this);
 		chargingBlockSwitch.setText(
 			isRussianDevice
-			? "Стирать данные даже при зарядке. Работает только если включена клавиатура и назначена по умолчанию. Теоретически, может защитить от Celebrite. Но отключайте это перед обычной зарядкой или просто отключайте телефон чтобы временно остановить это приложение."
-			: "Wipe data on even charging. Work only if keyboard enabled and assigned by default. Theoretically, it can protect against Celebrite. But please disable this before regular charging or just turn off the phone to temporarily stop this app."
+			? "Стирать данные даже при зарядке. Работает только если включена клавиатура и назначена по умолчанию. Теоретически, может защитить от сложных USB-exploits. Но отключайте это перед обычной зарядкой или просто отключайте телефон чтобы временно остановить это приложение."
+			: "Wipe data on even charging. Work only if keyboard enabled and assigned by default. Theoretically, it can protect against complex USB-exploits. But please disable this before regular charging or just turn off the phone to temporarily stop this app."
 		);
 
 
