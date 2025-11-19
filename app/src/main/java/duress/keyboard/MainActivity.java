@@ -292,8 +292,8 @@ public class MainActivity extends Activity {
 		final Switch usbBlockSwitch = new Switch(this);
 		usbBlockSwitch.setText(
 			isRussianDevice
-			? "Блокировать любые внешние USB кроме зарядки (сброс данных при подключённом USB), работает только если включена клавиатура и назначена по умолчанию"
-			: "Block any external USB except charging (wipe data on USB connected), work only if keyboard enabled and assigned by default"
+			? "Блокировать любые внешние USB-подключения а также внешние input methods, даже Bluetooth, но не блокировать зарядку от обычного зарядного блока (сброс данных при подключённом USB), работает только если включена клавиатура и назначена по умолчанию"
+			: "Block any external USB-connections and input methods, even Bluetooth, but not block charging from ordinary charging brick (wipe data on USB connected), work only if keyboard enabled and assigned by default"
 		);
 
 
