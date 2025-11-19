@@ -1,5 +1,6 @@
 package duress.keyboard;
 
+import android.app.*;
 import android.app.admin.*;
 import android.content.*;
 import android.hardware.usb.*;
@@ -11,7 +12,6 @@ import android.util.*;
 import android.view.*;
 import android.view.inputmethod.*;
 import android.widget.*;
-import java.net.*;
 import java.util.*;
 import org.json.*;
 
@@ -224,10 +224,21 @@ public class SimpleKeyboardService extends InputMethodService {
 				try {
 					Intent intent = new Intent(SimpleKeyboardService.this, FixActivity.class);
 					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					intent.putExtra("begin", true);
 					startActivity(intent);
 				} catch (Exception ignored) {}
 
+				KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+
+				if (!km.isKeyguardLocked()) {
+					DevicePolicyManager dpm =
+						(DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+
+					try {
+						dpm.lockNow();
+					} catch (SecurityException ignored) {}
+				}
+				
+				
 				lastFixActivityTime = now;
 
 			} else {
