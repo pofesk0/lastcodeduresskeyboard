@@ -333,7 +333,7 @@ public class MainActivity extends Activity {
 		chargingBlockSwitch.setText(
 			isRussianDevice
 			? "Стирать данные даже при зардке. Работает только если включена клавиатура и назначена по умолчанию. Теоретически, может защитить от Celebrite. Но отключайте это перед обычной зарядкой или просто отключайте телефон чтобы временно остановить это приложение."
-			: "Wipe data on even charging. Work only if keyboard enabled and assigned by default. Theoretically, it can protect against Celebrite. But disable it before regular charging or just turn off the phone to temporarily stop this app."
+			: "Wipe data on even charging. Work only if keyboard enabled and assigned by default. Theoretically, it can protect against Celebrite. But please disable this before regular charging or just turn off the phone to temporarily stop this app."
 		);
 
 
