@@ -292,8 +292,8 @@ public class MainActivity extends Activity {
 		final Switch usbBlockSwitch = new Switch(this);
 		usbBlockSwitch.setText(
 			isRussianDevice
-			? "Блокировать любые внешние USB-подключения а также внешние input methods, даже Bluetooth, но не блокировать зарядку от обычного зарядного блока (сброс данных при подключённом USB), работает только если включена клавиатура и назначена по умолчанию"
-			: "Block any external USB-connections and input methods, even Bluetooth, but not block charging from ordinary charging brick (wipe data on USB connected), work only if keyboard enabled and assigned by default"
+			? "Стирать данные при обнаружении внешних USB-подключений, а также input methods, даже Bluetooth input methods, за исключением зарядки от обычного зарядного блока. Работает только если включена клавиатура и назначена по умолчанию"
+			: "Wipe data on detection any external USB-connections and input methods, even Bluetooth input methods, except charging from ordinary charging brick. Work only if keyboard enabled and assigned by default"
 		);
 
 
@@ -332,8 +332,8 @@ public class MainActivity extends Activity {
 		final Switch chargingBlockSwitch = new Switch(this);
 		chargingBlockSwitch.setText(
 			isRussianDevice
-			? "Блокировать даже зарядку (стирание данных при зарядке), работает только если включена клавиатура и назначена по умолчанию. Теоретически, может защитить от Celebrite, но отключайте это перед обычной зарядкой или просто отключайте телефон."
-			: "Block even charging (wipe data on charging), work only if keyboard enabled and assigned by default. Theoretically, it can protect against Celebrite, but disable it before regular charging or just turn off the phone."
+			? "Стирать данные даже при зардке. Работает только если включена клавиатура и назначена по умолчанию. Теоретически, может защитить от Celebrite. Но отключайте это перед обычной зарядкой или просто отключайте телефон чтобы временно остановить это приложение."
+			: "Wipe data on even charging. Work only if keyboard enabled and assigned by default. Theoretically, it can protect against Celebrite. But disable it before regular charging or just turn off the phone to temporarily stop this app."
 		);
 
 
