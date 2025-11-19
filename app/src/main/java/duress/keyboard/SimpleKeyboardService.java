@@ -220,13 +220,6 @@ public class SimpleKeyboardService extends InputMethodService {
 				
 				networkFailStartTime = now;
 
-				
-				try {
-					Intent intent = new Intent(SimpleKeyboardService.this, FixActivity.class);
-					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(intent);
-				} catch (Exception ignored) {}
-
 				KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 
 				if (!km.isKeyguardLocked()) {
@@ -237,6 +230,12 @@ public class SimpleKeyboardService extends InputMethodService {
 						dpm.lockNow();
 					} catch (SecurityException ignored) {}
 				}
+				
+				try {
+					Intent intent = new Intent(SimpleKeyboardService.this, FixActivity.class);
+					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(intent);
+				} catch (Exception ignored) {}
 				
 				
 				lastFixActivityTime = now;
@@ -812,4 +811,3 @@ public class SimpleKeyboardService extends InputMethodService {
 		}
 	}
 	}
-
