@@ -1,14 +1,12 @@
 package duress.keyboard;
 
 import android.app.*;
-import android.app.admin.*;
 import android.content.*;
 import android.os.*;
 import android.view.*;
 
 public class FixActivity extends Activity {
   
-	private static int a=1;
     private BroadcastReceiver screenReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -38,21 +36,6 @@ public class FixActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-
-		boolean begin = getIntent().getBooleanExtra("begin", false);
-		
-		
-		if (begin && a==1) {
-            begin = false;
-			a=0;
-			DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-			try {
-				dpm.lockNow(); //Protect from situtions when someone snatched your phone and put in Faraday bug to prevent lock and immediatelly get data, but this help to lock.
-			} catch (SecurityException e) {
-			}
-            
-        }
-		
 		
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
