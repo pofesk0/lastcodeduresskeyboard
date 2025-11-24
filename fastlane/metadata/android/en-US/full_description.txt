@@ -1,0 +1,2 @@
+Keyboard that reacts to triggers and performs security actions.
+We are don't collect your data.
