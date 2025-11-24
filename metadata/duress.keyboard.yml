@@ -2,19 +2,22 @@ Categories:
   - System
 License: Unlicense
 SourceCode: https://github.com/pofesk0/lastcodeduresskeyboard
+IssueTracker: https://github.com/pofesk0/lastcodeduresskeyboard/issues
+
+AutoName: DuressKeyboard
 
 RepoType: git
 Repo: https://github.com/pofesk0/lastcodeduresskeyboard
 
 Builds:
-  - versionName: '1.1'
-    versionCode: 1
-    commit: main
+  - versionName: '2.5'
+    versionCode: 25
+    commit: v2.5
     subdir: app
     gradle:
       - yes
-    gradleprops:
-      - POM_ARTIFACT_ID=app
 
-AutoUpdateMode: None
-UpdateCheckMode: None
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '2.5'
+CurrentVersionCode: 25
