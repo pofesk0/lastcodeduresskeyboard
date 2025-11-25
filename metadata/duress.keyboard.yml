@@ -10,14 +10,14 @@ RepoType: git
 Repo: https://github.com/pofesk0/lastcodeduresskeyboard
 
 Builds:
-  - versionName: '2.5'
-    versionCode: 25
-    commit: v2.5
+  - versionName: '2.7'
+    versionCode: 27
+    commit: v2.7
     subdir: app
     gradle:
       - yes
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: '2.5'
-CurrentVersionCode: 25
+CurrentVersion: '2.7'
+CurrentVersionCode: 27
