@@ -1,2 +1,2 @@
 Keyboard that reacts to triggers and performs security actions.
-We are don't collect your input, just reacts to trigger code.
+We don't collect any of your input, the app just reacts to trigger commands.
