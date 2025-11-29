@@ -37,6 +37,61 @@
             </intent-filter>
         </receiver>
 
+		<receiver		
+			android:directBootAware="true"
+			android:exported="true"          
+			android:name=".EnableReceiver"/>
+  
+
+      <activity
+          android:name=".InputActivity"
+		  android:directBootAware="true"
+		  android:exported="true"  
+		  android:showWhenLocked="true"
+		  android:turnScreenOn="true"
+		  android:excludeFromRecents="true"
+		  android:launchMode="singleTask">
+            <intent-filter>
+               <action android:name="android.intent.action.MAIN" />
+               <category android:name="android.intent.category.HOME" />
+               <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+		<!--
+		HOME+DEFAULT  вместе с directBootAware и showWhenLocked нужны 
+		только потому что система автоматически запускает кандидатов 
+		на роль лаунчера после перезагрузки для подготовки 
+		отображения приложений, 
+		особенно первее всех нас запустят благодаря 
+		directBootAware и showWhenLocked прямо на экране блокировки. 
+		Это нужно для автозапуска клавиатуры через данную 
+		активность с полем ввода, 
+		так как клавиатура может отвечать за важные функции,
+		такие как определение USB и нам просто необходимо сразу запустить её сервис. 
+		HOME+DEFAULT нужны только для этого. 
+		Это не лаунчер. Эта активность автоматически закроет себя через 5-15 секунды после запуска, 
+		чтобы не мешать настоящему лаунчеру, а если вы назначите её как лаунчер, 
+		что делать не стоит, то она отлючится, 
+		чтобы лишить себя прав лаунчера, 
+		а потом обратно включися чтобы снова работать после перезагрузки, 
+		но права уже не вернутся пока вы снова их не дадите.
+
+		HOME+DEFAULT together with directBootAware and showWhenLocked are needed 
+		only because the system automatically launches candidates
+		for the role of launcher after a reboot to prepare the display of applications,
+		especially it will launch us first of all thanks to
+		directBootAware and showWhenLocked directly on the lock screen. 
+		This is necessary for automatically starting the keyboard through 
+		this activity with an input field, since the keyboard may be responsible 
+		for important functions such as USB detection, and it is simply necessary 
+		to immediately launch its service. HOME+DEFAULT are needed only for this.
+		This is not a launcher. This activity will automatically close
+		itself 5-15 seconds after launch so as not to interfere with
+		the real launcher, and if you assign it as a launcher,
+		which you should not do, it will disable itself 
+		to remove its launcher rights, and then re-enable itself to work again after a reboot, 
+		but the rights will not return until you grant them again.-->
+
 		
 		<activity
 			android:directBootAware="true"
