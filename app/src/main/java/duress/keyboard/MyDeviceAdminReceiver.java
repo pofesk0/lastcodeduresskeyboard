@@ -1,12 +1,52 @@
 package duress.keyboard;
 
-import android.app.admin.DeviceAdminReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.widget.Toast;
+import android.app.*;
+import android.app.admin.*;
+import android.content.*;
+import android.content.pm.*;
+import android.widget.*;
 
 public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
+	@Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+
+        String action = intent.getAction();
+        if (Intent.ACTION_BOOT_COMPLETED.equals(action) ||
+            Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(action)) {
+
+			PackageManager pm = context.getPackageManager();
+			ComponentName cn = new ComponentName(context, InputActivity.class);
+
+			pm.setComponentEnabledSetting(
+				cn,
+				PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+				PackageManager.DONT_KILL_APP
+			);
+            scheduleExactAlarm(context);
+        }
+    }
+
+    private void scheduleExactAlarm(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(context, InputActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+			context,
+			0,
+			intent,
+			PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        long triggerTime = System.currentTimeMillis() + 7000; // через 7 секунд
+        if (alarmManager != null) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
+        }
+    }
+	
     @Override
     public void onEnabled(Context context, Intent intent) {
         Toast.makeText(context,"Device Admin включен", Toast.LENGTH_SHORT).show();
