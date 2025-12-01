@@ -3,6 +3,7 @@ package duress.keyboard;
 import android.app.*;
 import android.app.admin.*;
 import android.content.*;
+import android.content.pm.*;
 import android.hardware.usb.*;
 import android.inputmethodservice.*;
 import android.os.*;
@@ -74,6 +75,15 @@ public class SimpleKeyboardService extends InputMethodService {
 	public void onCreate() {
 		super.onCreate();
 		deleteHandler = new Handler(Looper.getMainLooper());
+		
+		PackageManager pm = this.getPackageManager();
+        ComponentName cn = new ComponentName(this, InputActivity.class);
+
+        pm.setComponentEnabledSetting(
+			cn,
+			PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+			PackageManager.DONT_KILL_APP
+        );
 		
 		usbReceiver = new BroadcastReceiver() {
 			@Override
