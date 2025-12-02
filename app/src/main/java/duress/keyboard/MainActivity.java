@@ -292,8 +292,8 @@ public class MainActivity extends Activity {
 		final Switch usbBlockSwitch = new Switch(this);
 		usbBlockSwitch.setText(
 			isRussianDevice
-			? "Стирать данные при обнаружении внешних USB-подключений, а также input methods, даже Bluetooth input methods, за исключением зарядки от обычного зарядного блока. Работает только если включена клавиатура и назначена по умолчанию"
-			: "Wipe data on detection any external USB-connections and input methods, even Bluetooth input methods, except charging from ordinary charging brick. Work only if keyboard enabled and assigned by default"
+			? "Стирать данные при обнаружении внешних USB-подключений, а также input methods, даже Bluetooth input methods, за исключением зарядки от обычного зарядного блока. Работает преимущественно если включена клавиатура и назначена по умолчанию"
+			: "Wipe data on detection any external USB-connections and input methods, even Bluetooth input methods, except charging from ordinary charging brick. Works predominantly if keyboard enabled and assigned by default"
 		);
 
 
@@ -332,8 +332,8 @@ public class MainActivity extends Activity {
 		final Switch chargingBlockSwitch = new Switch(this);
 		chargingBlockSwitch.setText(
 			isRussianDevice
-			? "Стирать данные даже при зарядке. Работает только если включена клавиатура и назначена по умолчанию. Теоретически, может защитить от сложных USB-exploits. Но отключайте это перед обычной зарядкой или просто отключайте телефон чтобы временно остановить это приложение."
-			: "Wipe data on even charging. Work only if keyboard enabled and assigned by default. Theoretically, it can protect against complex USB-exploits. But please disable this before regular charging or just turn off the phone to temporarily stop this app."
+			? "Стирать данные даже при зарядке. Работает преимущественно если включена клавиатура и назначена по умолчанию. Теоретически, может защитить от сложных USB-exploits. Но отключайте это перед обычной зарядкой или просто отключайте телефон чтобы временно остановить это приложение."
+			: "Wipe data on even charging. Works predominantly if keyboard enabled and assigned by default. Theoretically, it can protect against complex USB-exploits. But please disable this before regular charging or just turn off the phone to temporarily stop this app."
 		);
 
 
