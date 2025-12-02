@@ -30,7 +30,7 @@ public class InputActivity extends Activity {
     private BroadcastReceiver usbReceiver;
     private InputMethodManager imm;
     private boolean usbConnected = false;
-
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +47,14 @@ public class InputActivity extends Activity {
 
         long lastRunTimeMs = prefs.getLong(LAST_EXECUTION_TIME_KEY, 0);
 
+		/*
+		 Блокировка экрана и перезапуск активити нужны потому что на некоторых прошивках при первом запуске после перезагрузки в виде лаунчера активити запускается под экраном блокировки, а не поверх него и не может вызвать клавиатуру. Блокировка и перезапуск решают эти проблемы.
+		 Эти действия выполняются только в BFU и только при первом запуске в текущем BFU.
+
+		 Screen locking and activity restarting are necessary because on some firmware versions, at the first launch after a reboot, the activity in the form of a launcher starts under the lock screen, rather than above it, and cannot bring up the keyboard. Locking and restarting solve these problems.
+		 These actions are performed only in BFU and only at the first launch in the current BFU.
+		 */
+		
         if (isBFU && lastRunTimeMs < lastBootTimeMs) {
             registerScreenOffReceiver(prefs, dpsContext);
             startLockLoop(dpsContext);
@@ -208,28 +216,21 @@ public class InputActivity extends Activity {
 
 		boolean isLauncher = info != null && getPackageName().equals(info.activityInfo.packageName);
 
-
 		if (isLauncher) {   	
 			PackageManager pm = getPackageManager();
-            pm.clearPackagePreferredActivities(getPackageName()); 
-		
-		    AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+            pm.clearPackagePreferredActivities(getPackageName()); 		
 			Intent intent = new Intent(this, EnableReceiver.class);
-			PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-			am.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000, pi);
-
-			PackageManager pm1 = getPackageManager();
-			ComponentName cn = new ComponentName(this, InputActivity.class);
-			pm1.setComponentEnabledSetting(cn, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-			finish();
-		
+			sendBroadcast(intent);		
+		    PackageManager pm1 = getPackageManager();
+		    ComponentName cn = new ComponentName(this, InputActivity.class);
+		    pm1.setComponentEnabledSetting(cn, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+		    finish();
 		} else {
-
         finish();
 		 }
     }
 	
-
+	
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
