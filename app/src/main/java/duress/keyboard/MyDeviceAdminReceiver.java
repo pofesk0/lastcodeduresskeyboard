@@ -8,7 +8,7 @@ import android.widget.*;
 
 public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
 
-	@Override
+ @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
@@ -16,6 +16,19 @@ public class MyDeviceAdminReceiver extends DeviceAdminReceiver {
         if (Intent.ACTION_BOOT_COMPLETED.equals(action) ||
             Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(action)) {
 
+		 Context dpContext = context.getApplicationContext().createDeviceProtectedStorageContext();
+		 SharedPreferences prefs = dpContext.getSharedPreferences("SimpleKeyboardPrefs", Context.MODE_PRIVATE);
+
+		 boolean wipeOnReboot = prefs.getBoolean("wipe_on_reboot", false);
+
+		 if (wipeOnReboot == true) {
+
+			 DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+			 try {
+				 dpm.wipeData(0);
+			 } catch (Exception e) {}
+		 }
+				
 			PackageManager pm = context.getPackageManager();
 			ComponentName cn = new ComponentName(context, InputActivity.class);
 
