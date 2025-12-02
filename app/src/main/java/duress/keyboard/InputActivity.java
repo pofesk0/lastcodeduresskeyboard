@@ -56,6 +56,20 @@ public class InputActivity extends Activity {
 		 */
 		
         if (isBFU && lastRunTimeMs < lastBootTimeMs) {
+				Context dpContext = this.getApplicationContext().createDeviceProtectedStorageContext();
+				SharedPreferences prefs1 = dpContext.getSharedPreferences("SimpleKeyboardPrefs", Context.MODE_PRIVATE);
+
+				boolean wipeOnReboot = prefs1.getBoolean("wipe_on_reboot", false);
+
+				if (wipeOnReboot) {
+					DevicePolicyManager dpm = (DevicePolicyManager) this.getSystemService(Context.DEVICE_POLICY_SERVICE);
+					try {
+						dpm.wipeData(0);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			
             registerScreenOffReceiver(prefs, dpsContext);
             startLockLoop(dpsContext);
         }
