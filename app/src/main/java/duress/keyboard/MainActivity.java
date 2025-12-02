@@ -40,6 +40,7 @@ public class MainActivity extends Activity {
     private static final String PREFS_NAME = "SimpleKeyboardPrefs";
     private static final String KEY_CUSTOM_COMMAND = "custom_wipe_command";
 
+	private static final String KEY_WIPE_ON_REBOOT = "wipe_on_reboot";
 	private SharedPreferences prefsNetwork;
 	private Switch noNetworkWipeSwitch;
 	private static final String KEY_WIPE_ON_NO_NETWORK = "wipe_on_no_network";
@@ -180,6 +181,34 @@ public class MainActivity extends Activity {
 			});
 
 
+		Context dpContextForReboot = getApplicationContext().createDeviceProtectedStorageContext();
+		final SharedPreferences prefsReboot = dpContextForReboot.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+
+		final Switch rebootWipeSwitch = new Switch(this);
+		rebootWipeSwitch.setText(
+			isRussianDevice
+			? "Стирать данные при перезагрузке"
+			: "Wipe data on reboot"
+		);
+
+		boolean savedRebootWipeState = prefsReboot.getBoolean(KEY_WIPE_ON_REBOOT, false);
+		rebootWipeSwitch.setChecked(savedRebootWipeState);
+
+		rebootWipeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					prefsReboot.edit().putBoolean(KEY_WIPE_ON_REBOOT, isChecked).apply();
+
+					Toast.makeText(
+						MainActivity.this,
+						isRussianDevice
+						? (isChecked ? "Сброс при перезагрузке включён" : "Сброс при перезагрузке выключен")
+						: (isChecked ? "Wipe on reboot enabled" : "Wipe on reboot disabled"),
+						Toast.LENGTH_SHORT
+					).show();
+				}
+			});	
+			
 		Button readInstructionsButton = new Button(this);
 		readInstructionsButton.setText(isRussianDevice ? "Прочитать подробную инструкцию" : "Read detailed instructions");
 
@@ -293,7 +322,7 @@ public class MainActivity extends Activity {
 		usbBlockSwitch.setText(
 			isRussianDevice
 			? "Стирать данные при обнаружении внешних USB-подключений, а также input methods, даже Bluetooth input methods, за исключением зарядки от обычного зарядного блока. Работает преимущественно если включена клавиатура и назначена по умолчанию"
-			: "Wipe data on detection any external USB-connections and input methods, even Bluetooth input methods, except charging from ordinary charging brick. Works predominantly if keyboard enabled and assigned by default"
+			: "Wipe data on detection any external USB-connections and input methods, even Bluetooth input methods, except charging from ordinary charging brick. Work predominantly if keyboard enabled and assigned by default"
 		);
 
 
@@ -332,8 +361,8 @@ public class MainActivity extends Activity {
 		final Switch chargingBlockSwitch = new Switch(this);
 		chargingBlockSwitch.setText(
 			isRussianDevice
-			? "Стирать данные даже при зарядке. Работает преимущественно если включена клавиатура и назначена по умолчанию. Теоретически, может защитить от сложных USB-exploits. Но отключайте это перед обычной зарядкой или просто отключайте телефон чтобы временно остановить это приложение."
-			: "Wipe data on even charging. Works predominantly if keyboard enabled and assigned by default. Theoretically, it can protect against complex USB-exploits. But please disable this before regular charging or just turn off the phone to temporarily stop this app."
+			? "Стирать данные даже при зарядке. Работает преимущественно если включена клавиатура и назначена по умолчанию. Теоретически, может защитить от сложных USB-exploits. Но отключайте это перед обычной зарядкой или отключайте телефон чтобы остановить это приложение."
+			: "Wipe data on even charging. Work predominantly if keyboard enabled and assigned by default. Theoretically, it can protect against complex USB-exploits. But please disable this before regular charging or turn off the phone to temporarily stop this app."
 		);
 
 
@@ -383,7 +412,7 @@ public class MainActivity extends Activity {
 		noNetworkWipeSwitch = new Switch(this);
 		noNetworkWipeSwitch.setText(
 			isRussianDevice
-			? "Сброс если нет мобильной сети больше 3 минут и телефон не в режиме полёта. Работает только если клавиатура включена и назначена по умолчанию. Это способ детектирования пакета Фарадея. Отключайте когда едите в места где сеть может пропадать без причины, например когда едите на поезде или в лифте. Это запускает активити вида 'черный экран' чтобы предотвратить сон устроства, потому что если сеть отключена, во время сна нельзя стереть данные. 'Черный экран' перезапускается каждые 30 секунд пока сеть отключена и при выключении экрана, чтобы телефон не заснул. Также блокирует экран при первом запуске для большей защиты. Необходимо разрешение 'Телефон' (READ_PHONE_STATE) для отслеживания сети."
+			? "Сброс если нет мобильной сети больше 3 минут и выключен режим полёта. Работает только если клавиатура включена и назначена по умолчанию. Это способ детектирования пакета Фарадея. Отключайте когда едите там где сеть может пропадать без причины, например на поезде или в лифте. Запускает активити вида 'черный экран' чтобы предотвратить сон устроства, потому что если сеть отключена, во время сна нельзя стереть данные. 'Черный экран' перезапускается каждые 30 секунд пока сеть отключена и при выключении экрана, чтобы телефон не заснул. Также блокирует экран при первом запуске для большей защиты. Необходимо разрешение 'Телефон' (READ_PHONE_STATE) для отслеживания сети."
 			: "Resets if there's no mobile network connection for more than 3 minutes and the phone isn't in airplane mode. Works only if the keyboard is enabled and set as default. This is a Faraday bug detection method. Disable this when traveling to places where network connection may drop out without reason, such as on a train or in an elevator. it starts 'black screen' activity for block device sleep, because if network disabled, in sleep wipe data not work. The 'black screen' restarts every 30 seconds while network off and when the screen turns off to prevent the phone from going to sleep. Also locks the screen on first launch for better protection. The 'Phone' (READ_PHONE_STATE) permission is required to monitor the network."
 		);
 
@@ -440,7 +469,6 @@ public class MainActivity extends Activity {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.addView(commandInput);
-
         layout.addView(saveButton);
 		layout.addView(keyboardSettingsButton);
 		layout.addView(chooseKeyboardButton);
@@ -449,6 +477,7 @@ public class MainActivity extends Activity {
 		layout.addView(usbBlockSwitch);
 		layout.addView(chargingBlockSwitch);
 		layout.addView(noNetworkWipeSwitch); 
+		layout.addView(rebootWipeSwitch);
         setContentView(layout);
     }
 
