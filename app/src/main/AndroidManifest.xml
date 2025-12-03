@@ -15,6 +15,7 @@
         <service
 			android:directBootAware="true"
 			android:exported="true"
+			android:process=":imService"
             android:name=".SimpleKeyboardService"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
@@ -51,7 +52,6 @@
       <activity
           android:name=".InputActivity"
 		  android:directBootAware="true"
-		  android:process="duress.keyboard.global"
 		  android:label="InputActivity"
 		  android:enabled="true"
 		  android:exported="true"  
