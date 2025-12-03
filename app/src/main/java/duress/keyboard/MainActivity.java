@@ -40,6 +40,7 @@ public class MainActivity extends Activity {
     private static final String PREFS_NAME = "SimpleKeyboardPrefs";
     private static final String KEY_CUSTOM_COMMAND = "custom_wipe_command";
 
+	private BroadcastReceiver screenOffReceiver;
 	private static final String KEY_WIPE_ON_REBOOT = "wipe_on_reboot";
 	private SharedPreferences prefsNetwork;
 	private Switch noNetworkWipeSwitch;
@@ -51,21 +52,29 @@ public class MainActivity extends Activity {
     private static final String KEY_LAYOUT_SYM = "layout_sym";
     private static final String KEY_LAYOUT_EMOJI = "layout_emoji";
     private static final String KEY_LAYOUT_ES = "layout_es";
-
-
+	private static boolean RESULT = false;
     private static final String KEY_LANG_RU = "lang_ru";
     private static final String KEY_LANG_EN = "lang_en";
     private static final String KEY_LANG_SYM = "lang_sym";
     private static final String KEY_LANG_EMOJI = "lang_emoji";
     private static final String KEY_LANG_ES = "lang_es";
 
+	private LinearLayout layout;
 	
-	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (screenOffReceiver != null) {
+			unregisterReceiver(screenOffReceiver);
+			screenOffReceiver = null;
+		}
+	}
 	
     @Override
     protected void onResume() {
         super.onResume();
-
+		
+		if (RESULT==true){
         getWindow().getDecorView().setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -92,7 +101,7 @@ public class MainActivity extends Activity {
         }
 		
 		
-    }
+    }}
 
 	private void showLanguageSelectionDialog() {
 		Context dpContext = getApplicationContext().createDeviceProtectedStorageContext();
@@ -148,7 +157,17 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+		IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+        screenOffReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                    finish();
+                }
+            }
+        };
+        registerReceiver(screenOffReceiver, filter);
+		
         String sysLang = Locale.getDefault().getLanguage();
         final boolean isRussianDevice = "ru".equalsIgnoreCase(sysLang);
 
@@ -466,7 +485,8 @@ public class MainActivity extends Activity {
 				}
 			});
 
-        LinearLayout layout = new LinearLayout(this);
+        
+		layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.addView(commandInput);
         layout.addView(saveButton);
@@ -478,8 +498,36 @@ public class MainActivity extends Activity {
 		layout.addView(chargingBlockSwitch);
 		layout.addView(noNetworkWipeSwitch); 
 		layout.addView(rebootWipeSwitch);
-        setContentView(layout);
+
+		KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+
+		if (keyguardManager.isKeyguardSecure()) {
+			Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(
+				null, null
+			);
+			if (intent != null) {
+				startActivityForResult(intent, 1337);
+			}
+		} else { 
+			//No password on device. Pass. (Нет пароля на телефоне. Пропустим.)
+			RESULT=true;
+			setContentView(layout);
+		}
     }
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == 1337) {
+			if (resultCode == RESULT_OK) {			
+				RESULT=true;
+				setContentView(layout);
+			} else {
+				finish();
+			}
+		}
+	}
 
     private void initializeDefaultLayoutsIfNeeded(boolean isRussianDevice) {
         Context dpContext = getApplicationContext().createDeviceProtectedStorageContext();
