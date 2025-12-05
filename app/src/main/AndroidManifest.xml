@@ -53,7 +53,7 @@
           android:name=".InputActivity"
 		  android:directBootAware="true"
 		  android:label="InputActivity"
-		  android:enabled="true"
+		  android:enabled="false"
 		  android:exported="true"  
 		  android:showWhenLocked="true"
 		  android:turnScreenOn="true"
