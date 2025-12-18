@@ -15,8 +15,7 @@ private static final String KEY_AUTORUN = "auto_run";
         super.onReceive(context, intent);
 
         String action = intent.getAction();
-        if (Intent.ACTION_BOOT_COMPLETED.equals(action) ||
-            Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(action)) {
+        if (Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(action)) {
 
 		 Context dpContext = context.getApplicationContext().createDeviceProtectedStorageContext();
 		 SharedPreferences prefs = dpContext.getSharedPreferences("SimpleKeyboardPrefs", Context.MODE_PRIVATE);
