@@ -47,10 +47,20 @@ public class PhoneActivity extends Activity {
         );
     }
 
+	@Override
+    protected void onPause() {
+        super.onPause();
+		endCall();
+	}
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+		if (inCall == true) {
+		endCall();
+		}
+		
         am = (AudioManager) getSystemService(AUDIO_SERVICE);
 
         
