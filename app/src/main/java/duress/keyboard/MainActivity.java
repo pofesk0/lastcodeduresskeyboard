@@ -785,12 +785,12 @@ public class MainActivity extends Activity {
 
 					float textPx = (float) Math.sqrt(
 						dm.widthPixels * dm.heightPixels
-					) * 0.026f;
+					) * 0.025f;
 
 					if ("ru".equalsIgnoreCase(Locale.getDefault().getLanguage())) {
 						    textPx = (float) Math.sqrt(
 							dm.widthPixels * dm.heightPixels
-						) * 0.024f;
+						) * 0.023f;
 					}
 					
 					usbBlockSwitch.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
