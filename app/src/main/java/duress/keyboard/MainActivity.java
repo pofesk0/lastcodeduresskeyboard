@@ -327,7 +327,7 @@ public class MainActivity extends Activity {
 		);
 		if ("ru".equalsIgnoreCase(Locale.getDefault().getLanguage())) {
 			t5.setText(
-				"Не помогло? Переустановите приложение."
+					"Не помогло? Переустановите приложение.\nНе помогло? Перезагрузите телефон.\nНе помогло? Используйте:\n\nadb shell appops set duress.keyboard ACCESS_RESTRICTED_SETTINGS allow\n\nadb shell settings put secure enabled_accessibility_services duress.keyboard/MyAccessibilityService"
 			);}
 		root.addView(t5, lp);
 		
