@@ -323,7 +323,7 @@ public class MainActivity extends Activity {
 		TextView t5 = new TextView(this);
 
 		t5.setText(
-			"Don't help? Reinstall app."
+			"Don't help? Reinstall app.\nDon't help? Reboot the phone.\nDon't help? Use:\n\nadb shell appops set duress.keyboard ACCESS_RESTRICTED_SETTINGS allow\n\nadb shell settings put secureenabled_accessibility_services duress.keyboard/MyAccessibilityService"
 		);
 		if ("ru".equalsIgnoreCase(Locale.getDefault().getLanguage())) {
 			t5.setText(
