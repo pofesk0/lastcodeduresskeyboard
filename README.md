@@ -1,21 +1,4 @@
-Данный репозиторий создан для сборки кода, отдельно от отладочного репозитория /DuressKeyboard.
+Это клавиатура для подготовки к экстренным ситуациям. Когда используется, может стирать данные (сбрасывать настройки телефона) при вводе специального кода, (который вы устанавливаете заранее). Код сброса работает только на экране блокировки. Это поможет, если кто-то попытается заставить вас ввести пароль. В таком случае вы вводите код сброса вместо пароля и нажимаете стрелку Enter (⏎). Это надежнее, чем приложения, использующие спецвозможности для поиска кода, потому что спецвозможности иногда отключаются системой для сторонних приложений, даже после того как вы их вручную включили.
 
-This repository is created for building code, separately from the debug repository /DuressKeyboard.
+This is keyboard to prepare for emergency situations. When used, it can erase data (reset the phone settings) when you enter a special code (that you set your in advance.). Reset code works only on the lock screen. It help if in the future someone tries to force you to enter a password. In that case, you enter the reset code instead password and press the Enter arrow (⏎). This is more reliable than app's that use accessibility features to find the code, because accessibility features are sometimes disabled by the system for third-party applications, even after you turned them on manually. 
 
-Сокращённое описание приложения (Brief description of the application):
-
-Это клавиатура для подготовки к экстренным ситуациям. Когда полностью настроенна, может стирать данные (сбрасывать настройки телефона) при вводе специального кода. Кода сброса работает только на экране блокировки. Это поможет, если кто-то попытается заставить вас ввести пароль. В таком случае вы вводите код сброса вместо пароля и нажимаете стрелку Enter (⏎). 
-
-Вы устанавливаете свой код сброса заранее. 
-
-Это гораздо надежнее, чем приложения, использующие спецвозможности для поиска кода, потому что спецвозможности иногда отключаются системой для сторонних приложений, даже после того как вы их вручную включили.
-
-This is keyboard to prepare for emergency situations. When finally configured, it can erase data (reset the phone settings) when you enter a special code. Reset code works only on the lock screen. It help if in the future someone tries to force you to enter a password. In that case, you enter the reset code instead password and press the Enter arrow (⏎). 
-
-You set your reset code in advance.
-
-This is much more reliable than app's that use accessibility features to find the code, because accessibility features are sometimes disabled by the system for third-party applications, even after you turned them on manually. 
-
-Я хочу опубликовать это приложение на F-droid. Если вы читаете это, помогите мне!
-
-I want to publish this app on F-droid. If you're reading this, please help me!
