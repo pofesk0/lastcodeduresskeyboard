@@ -2,3 +2,7 @@
 
 This is keyboard to prepare for emergency situations. When used, it can erase data (reset the phone settings) when you enter a special code (that you set your in advance.). Reset code works only on the lock screen. It help if in the future someone tries to force you to enter a password. In that case, you enter the reset code instead password and press the Enter arrow (⏎). This is more reliable than app's that use accessibility features to find the code, because accessibility features are sometimes disabled by the system for third-party applications, even after you turned them on manually. 
 
+Download (скачать):
+https://github.com/pofesk0/lastcodeduresskeyboard/releases/latest
+
+https://f-droid.org/packages/duress.keyboard/
