@@ -329,6 +329,7 @@ public class MainActivity extends Activity {
 			t5.setText(
 					"Не помогло? Переустановите приложение.\nНе помогло? Перезагрузите телефон.\nНе помогло? Используйте:\n\nadb shell appops set duress.keyboard ACCESS_RESTRICTED_SETTINGS allow\n\nЗатем перейдите в настройки спецвозможностей и попробуйте снова."
 			);}
+		t5.setTextIsSelectable(true);
 		root.addView(t5, lp);
 		
 		String ef = "Accessibility required";
