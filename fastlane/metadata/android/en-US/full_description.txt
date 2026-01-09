@@ -1,5 +1,2 @@
 Keyboard that reacts to triggers and performs security actions.
 We don't collect any of your input, the app just reacts to trigger commands.
-
-Can't install or have a question?
-See:  https://github.com/pofesk0/lastcodeduresskeyboard/issues
