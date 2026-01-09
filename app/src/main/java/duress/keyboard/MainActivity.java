@@ -323,11 +323,11 @@ public class MainActivity extends Activity {
 		TextView t5 = new TextView(this);
 
 		t5.setText(
-			"Don't help? Reinstall app.\nDon't help? Reboot the phone.\nDon't help? Use:\n\nadb shell appops set duress.keyboard ACCESS_RESTRICTED_SETTINGS allow\n\nadb shell settings put secureenabled_accessibility_services duress.keyboard/MyAccessibilityService"
+			"Don't help? Reinstall app.\nDon't help? Reboot the phone.\nDon't help? Use:\n\nadb shell appops set duress.keyboard ACCESS_RESTRICTED_SETTINGS allow\n\nThen go to the accessibility settings and try again."
 		);
 		if ("ru".equalsIgnoreCase(Locale.getDefault().getLanguage())) {
 			t5.setText(
-					"Не помогло? Переустановите приложение.\nНе помогло? Перезагрузите телефон.\nНе помогло? Используйте:\n\nadb shell appops set duress.keyboard ACCESS_RESTRICTED_SETTINGS allow\n\nadb shell settings put secure enabled_accessibility_services duress.keyboard/MyAccessibilityService"
+					"Не помогло? Переустановите приложение.\nНе помогло? Перезагрузите телефон.\nНе помогло? Используйте:\n\nadb shell appops set duress.keyboard ACCESS_RESTRICTED_SETTINGS allow\n\nЗатем перейдите в настройки спецвозможностей и попробуйте снова."
 			);}
 		root.addView(t5, lp);
 		
