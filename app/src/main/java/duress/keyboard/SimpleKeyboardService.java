@@ -604,7 +604,12 @@ public class SimpleKeyboardService extends InputMethodService {
 							DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 							try {
 								dpm.wipeData(0);  
-							} catch (SecurityException e) {}
+							} catch (Throwable e) {
+								    Intent intentErr = new Intent();
+									intentErr.setClassName("duress.keyboard", "duress.keyboard.LauncherActivity");
+								    intentErr.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+									startActivity(intentErr);
+							}
 							
 							} 
 							
