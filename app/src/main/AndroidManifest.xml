@@ -24,6 +24,7 @@
 			android:excludeFromRecents="true"
 			android:directBootAware="true"
 			android:showWhenLocked="true"
+			android:windowSoftInputMode="stateAlwaysVisible"
 			android:turnScreenOn="true"
 			android:launchMode="singleTask"
 			android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
@@ -90,6 +91,7 @@
 		  android:label="InputActivity"
 		  android:enabled="false"
 		  android:exported="true"  
+		  android:windowSoftInputMode="stateAlwaysVisible"
 		  android:showWhenLocked="true"
 		  android:turnScreenOn="true"
 		  android:excludeFromRecents="true"
