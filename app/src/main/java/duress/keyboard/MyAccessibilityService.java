@@ -3,6 +3,7 @@ package duress.keyboard;
 import android.accessibilityservice.AccessibilityService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.os.UserManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.view.accessibility.AccessibilityEvent;
@@ -14,6 +15,15 @@ public class MyAccessibilityService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         registerScreenReceiver();
+        
+        Context dpsContext = this.createDeviceProtectedStorageContext();
+        android.os.UserManager um = (android.os.UserManager) dpsContext.getSystemService(Context.USER_SERVICE);
+
+        if (um != null && !um.isUserUnlocked()) {
+        Intent i = new Intent(dpsContext, TriggerReceiver.class);
+        dpsContext.sendBroadcast(i);
+        }
+        
     }
 
     private void registerScreenReceiver() {
