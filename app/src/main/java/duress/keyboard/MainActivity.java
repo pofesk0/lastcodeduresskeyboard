@@ -659,8 +659,8 @@ public class MainActivity extends Activity {
 
 		ae.setText(
 			isRussianDevice
-			? "Запускать фейковое поле ввода пароля при каждом включении экрана, чтобы в случае чего вы могли ввести туда код сброса данных. Для запуска используется сервис спецвозможностей вместо клавиатуры. Включайте это как альтернативу клавиатуре, если она не работает у вас на экране блокировки (что бывает на некоторых китайских телефонах, например Realme)."
-			: "Launch a fake password input field every time the screen turns on, so that in case of something you can enter a data reset code there. For launching, an accessibility service is used instead of the keyboard. Enable this as an alternative to the keyboard if it does not work on your lock screen (which happens on some Chinese phones, for example Realme)."
+			? "Запускать фейковое поле ввода пароля при каждом включении экрана / перезагрузке в BFU, чтобы в случае чего вы могли ввести туда код сброса данных. Для запуска используется сервис спецвозможностей вместо клавиатуры. Включайте это как альтернативу клавиатуре, если она не работает у вас на экране блокировки (что бывает на некоторых китайских телефонах, например Realme)."
+			: "Launch a fake password input field upon every screen on / reboot into BFU, so that in case of something you can enter a data reset code there. For launching, an accessibility service is used instead of the keyboard. Enable this as an alternative to the keyboard if it does not work on your lock screen (which happens on some Chinese phones, for example Realme)."
 		);
 
 
