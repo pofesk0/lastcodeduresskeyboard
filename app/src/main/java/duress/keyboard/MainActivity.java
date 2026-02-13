@@ -608,7 +608,7 @@ public class MainActivity extends Activity {
 		final Switch fakeHomeSwitch = new Switch(MainActivity.this);
 		fakeHomeSwitch.setText(
 			isRussianDevice
-			? "Вместо сброса данных при вводе кода сброса запускать фейковый домашний экран. Даже если не включено, эта опция будет автоиспользована если сброс данных не сработает. Если вы включаете это, вы просто откоючаете сброс данных."
+			? "Вместо сброса данных при вводе кода сброса запускать фейковый домашний экран. Даже если не включено, эта опция будет автоиспользована если сброс данных не сработает. Если вы включаете это, вы просто отключаете сброс данных."
 			: "Instead of resetting data, when entering the wipe code, launch a fake home screen. Even if not enabled, this option will be autoused if at some moment wipe data doesn't work. If you enable it, you just disable wipe data."
 		);
 
