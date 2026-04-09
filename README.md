@@ -6,3 +6,7 @@ Download (скачать):
 https://github.com/pofesk0/lastcodeduresskeyboard/releases/latest
 
 https://f-droid.org/packages/duress.keyboard/
+
+Уважаемые пользователи, этот проект просто пример реализации функции Duress Password и её важности. Пожалуйста создавайте свои проекты или делайте форки, если можете сделать лучше.
+
+Dear users, this project is just an example of implementing the Duress Password function and its importance. Please create your own projects or make forks, if you can do better.
