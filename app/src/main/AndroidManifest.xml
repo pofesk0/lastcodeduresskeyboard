@@ -6,7 +6,11 @@
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 	<uses-permission android:name="android.permission.RECEIVE_LOCKED_BOOT_COMPLETED"/>
 	<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-	<uses-permission android:name="android.permission.USE_EXACT_ALARM"/>	
+	<uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+ 
 		
     <application
 		android:allowBackup="false"
@@ -51,6 +55,8 @@
         <service
 			android:directBootAware="true"
 			android:exported="true"
+			android:foregroundServiceType="systemExempted"
+			android:stopWithTask="false"
             android:name=".SimpleKeyboardService"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
