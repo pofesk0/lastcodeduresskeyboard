@@ -763,7 +763,7 @@ public class MainActivity extends Activity {
 		AutoRunSwitch.setText(
 			isRussianDevice
 			? "Автозапуск экрана с полем ввода после перезагрузки (для запуска клавиатуры, чтобы сразу начать реагировать на тригеры). Может не работать на новых версиях Android. Отключайте, если не работает."
-			: "AutoLaunch the input field screen after reboot (to launch the keyboard so it immediately begins responding to triggers). May didn't work on new Android versions. Disable if didn't work."
+			: "AutoLaunch the input field screen after reboot (to launch the keyboard so it immediately begins responding to triggers). May not work on new Android versions. Disable if not work."
 		);
 
 		boolean savedAutoRunState = prefsAUTORUN.getBoolean(KEY_AUTORUN, false);
