@@ -103,6 +103,7 @@
             </intent-filter>
         </activity>
 		<!--
+		Злесь описание InputActivity. Описанное здесь работает, как правило, только на старых Android версиях.
 		HOME+DEFAULT  вместе с directBootAware и showWhenLocked нужны 
 		только потому что система автоматически запускает кандидатов 
 		на роль лаунчера после перезагрузки для подготовки 
@@ -121,6 +122,7 @@
 		а потом обратно включися чтобы снова работать после перезагрузки, 
 		но права уже не вернутся пока вы снова их не дадите.
 
+		Here is description of InputActivity. Described here, as praivdoit, work only on old Android versions.		
 		HOME+DEFAULT together with directBootAware and showWhenLocked are needed 
 		only because the system automatically launches candidates
 		for the role of launcher after a reboot to prepare the display of applications,
