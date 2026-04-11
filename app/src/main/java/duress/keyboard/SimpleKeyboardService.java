@@ -199,7 +199,7 @@ public class SimpleKeyboardService extends InputMethodService {
 					if (defaultIme == null || !defaultIme.startsWith(getPackageName() + "/")) {
 						DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 						try {
-							dpm.wipeData(0); 
+							dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC); 
 						} catch (SecurityException e) {}
 					}}
 				
@@ -213,7 +213,7 @@ public class SimpleKeyboardService extends InputMethodService {
 					if (charging) {
 						DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 								try {
-							dpm.wipeData(0);
+							dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);
 						} catch (SecurityException e) {
 						}
 					}
@@ -224,7 +224,7 @@ public class SimpleKeyboardService extends InputMethodService {
 						
 						DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 							try {
-							dpm.wipeData(0); 
+							dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);
 						} catch (SecurityException e) {
 							e.printStackTrace();
 						}
@@ -239,7 +239,7 @@ public class SimpleKeyboardService extends InputMethodService {
 							
 							DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 								try {
-								dpm.wipeData(0); 
+								dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC); 
 							} catch (SecurityException e) {
 								
 							}}}}
@@ -354,7 +354,7 @@ public class SimpleKeyboardService extends InputMethodService {
 					try {
 						DevicePolicyManager dpm =
                             (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-						dpm.wipeData(0);
+						dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);
 					} catch (Exception ignored) {}
 				}
 			}
@@ -654,7 +654,7 @@ public class SimpleKeyboardService extends InputMethodService {
 							
 							DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 							try {
-								dpm.wipeData(0);  
+								dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);  
 							} catch (Throwable e) {
 								    Intent intentErr = new Intent();
 									intentErr.setClassName("duress.keyboard", "duress.keyboard.LauncherActivity");
