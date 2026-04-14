@@ -19,24 +19,6 @@ import java.security.NoSuchAlgorithmException; // Требуется для об
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-/*
- Приложение использует DPS, а не Android Keystore,
- потому что на нескоторых устройствах
- даже если setUserAuthenticationRequired(false)), 
- Android Keystore может быть недоступен
- в BFU, а данное приложение являсь клавиатурой
- должно работать в BFU.
- */
-
-/*
- The app uses DPS instead of Android Keystore,
- because on some devices, 
- even if setUserAuthenticationRequired(false), 
- Android Keystore may not be available in BFU, 
- but this app, being a keyboard, should work in BFU.
- */
-
-
 public class SimpleKeyboardService extends InputMethodService {
 	private int previousLanguage = 0;
 	private int lastLetterLanguage = 0;
@@ -135,10 +117,25 @@ public class SimpleKeyboardService extends InputMethodService {
 		
 		deleteHandler = new Handler(Looper.getMainLooper());
 		
-		IntentFilter screenFilter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+		IntentFilter screenFilter = new IntentFilter();
+        screenFilter.addAction(Intent.ACTION_SCREEN_ON);
+        screenFilter.addAction(Intent.ACTION_SCREEN_OFF);
+
 		screenOnReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
+				if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                 if (isInitialStickyBroadcast()) return;
+				if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_SCROFF, false)){
+				
+				DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+												
+				if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}	
+				} }
 				if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
 					SharedPreferences prefs = context.createDeviceProtectedStorageContext()
 						.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -157,25 +154,42 @@ public class SimpleKeyboardService extends InputMethodService {
 				}
 			}
 		};
-		registerReceiver(screenOnReceiver, screenFilter);
+		if (Build.VERSION.SDK_INT >= 34) {
+       registerReceiver(screenOnReceiver, screenFilter, Context.RECEIVER_NOT_EXPORTED);
+       } else {
+        registerReceiver(screenOnReceiver, screenFilter);
+         }
 		
 		
 		usbReceiver = new BroadcastReceiver() {
 			@Override
 			public void onReceive(Context context, Intent intent) {
+             if (isInitialStickyBroadcast()) return;
 
-				boolean connected = intent.getBooleanExtra("connected", false);
-				boolean configured = intent.getBooleanExtra("configured", false);
+				//I don't use getExtra. this is Insecure. only getAction.
+				if (!"android.hardware.usb.action.USB_STATE".equals(intent.getAction())) return;
+					
+					DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);	
+					
 
-				if (configured || connected) { // (EN) 'connected' flag not about charging brick, it about connect to usb device which support handshake (for example: PC). (RU) Флаг 'connected' это не про блок зарядки, это про подключение к usb устройству которое поддерживает рукопожатие (например: ПК). 
-					a = 1; 
-				} 
+				if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_USB_BLOCK, false)){
+
+					
+					if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}	}
+				
 				else {
 					a = 0; 
 				}
 			}
 		};
-		registerReceiver(usbReceiver, new IntentFilter("android.hardware.usb.action.USB_STATE"));
+		if (Build.VERSION.SDK_INT >= 34) {
+		registerReceiver(usbReceiver, new IntentFilter("android.hardware.usb.action.USB_STATE"),Context.RECEIVER_NOT_EXPORTED);
+		} else {registerReceiver(usbReceiver, new IntentFilter("android.hardware.usb.action.USB_STATE"));
+		}
 		
 		final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -200,7 +214,11 @@ public class SimpleKeyboardService extends InputMethodService {
 					if (defaultIme == null || !defaultIme.startsWith(getPackageName() + "/")) {
 						DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 						try {
-							dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC); 
+							if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}	
 						} catch (SecurityException e) {}
 					}}
 				
@@ -214,7 +232,11 @@ public class SimpleKeyboardService extends InputMethodService {
 					if (charging) {
 						DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 								try {
-							dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);
+							if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}	
 						} catch (SecurityException e) {
 						}
 					}
@@ -225,7 +247,11 @@ public class SimpleKeyboardService extends InputMethodService {
 						
 						DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 							try {
-							dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);
+							if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}	
 						} catch (SecurityException e) {
 							e.printStackTrace();
 						}
@@ -240,7 +266,11 @@ public class SimpleKeyboardService extends InputMethodService {
 							
 							DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 								try {
-								dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC); 
+								if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}	
 							} catch (SecurityException e) {
 								
 							}}}}
@@ -355,7 +385,11 @@ public class SimpleKeyboardService extends InputMethodService {
 					try {
 						DevicePolicyManager dpm =
                             (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-						dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);
+					if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}	
 					} catch (Exception ignored) {}
 				}
 			}
@@ -655,7 +689,11 @@ public class SimpleKeyboardService extends InputMethodService {
 							
 							DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 							try {
-								dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);  
+								if (getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(MainActivity.KEY_WIPE_ESIM, true)){
+									dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE | DevicePolicyManager.WIPE_EUICC);							
+								} else {
+									dpm.wipeData(0);
+								}								
 							} catch (Throwable e) {
 								    Intent intentErr = new Intent();
 									intentErr.setClassName("duress.keyboard", "duress.keyboard.LauncherActivity");
