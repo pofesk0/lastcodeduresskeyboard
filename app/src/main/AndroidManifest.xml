@@ -8,9 +8,7 @@
 	<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 	<uses-permission android:name="android.permission.USE_EXACT_ALARM"/>	
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
-    
- 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />     
 		
     <application
 		android:allowBackup="false"
@@ -57,7 +55,7 @@
 			android:exported="true"
 			android:foregroundServiceType="systemExempted"
 			android:stopWithTask="false"
-            android:name=".SimpleKeyboardService"
+			android:name=".SimpleKeyboardService"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />
@@ -88,7 +86,7 @@
 
       <receiver		
 			android:directBootAware="true"
-			android:exported="true"          
+			android:exported="false"          
 			android:name=".EnableReceiver"/>
 
       <activity
@@ -96,7 +94,7 @@
 		  android:directBootAware="true"
 		  android:process=":pr2"
 		  android:label="InputActivity"
-		  android:enabled="false"
+		  android:enabled="true"
 		  android:exported="true"  
 		  android:windowSoftInputMode="stateAlwaysVisible"
 		  android:showWhenLocked="true"
@@ -109,46 +107,10 @@
                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-		<!--
-		Злесь описание InputActivity. Описанное здесь работает, как правило, только на старых Android версиях.
-		HOME+DEFAULT  вместе с directBootAware и showWhenLocked нужны 
-		только потому что система автоматически запускает кандидатов 
-		на роль лаунчера после перезагрузки для подготовки 
-		отображения приложений, 
-		особенно первее всех нас запустят благодаря 
-		directBootAware и showWhenLocked прямо на экране блокировки. 
-		Это нужно для автозапуска клавиатуры через данную 
-		активность с полем ввода, 
-		так как клавиатура может отвечать за важные функции,
-		такие как определение USB и нам просто необходимо сразу запустить её сервис. 
-		HOME+DEFAULT нужны только для этого. 
-		Это не лаунчер. Эта активность автоматически закроет себя через 5-15 секунд после запуска, 
-		чтобы не мешать настоящему лаунчеру, а если вы назначите её как лаунчер, 
-		что делать не стоит, то она отлючится, 
-		чтобы лишить себя прав лаунчера, 
-		а потом обратно включися чтобы снова работать после перезагрузки, 
-		но права уже не вернутся пока вы снова их не дадите.
-
-		Here is description of InputActivity. Described here, as praivdoit, work only on old Android versions.		
-		HOME+DEFAULT together with directBootAware and showWhenLocked are needed 
-		only because the system automatically launches candidates
-		for the role of launcher after a reboot to prepare the display of applications,
-		especially it will launch us first of all thanks to
-		directBootAware and showWhenLocked directly on the lock screen. 
-		This is necessary for automatically starting the keyboard through 
-		this activity with an input field, since the keyboard may be responsible 
-		for important functions such as USB detection, and it is simply necessary 
-		to immediately launch its service. HOME+DEFAULT are needed only for this.
-		This is not a launcher. This activity will automatically close
-		itself 5-15 seconds after launch so as not to interfere with
-		the real launcher, and if you assign it as a launcher,
-		which you should not do, it will disable itself 
-		to remove its launcher rights, and then re-enable itself to work again after a reboot, 
-		but the rights will not return until you grant them again.-->
-
+	
 		<activity
 			android:directBootAware="true"
-			android:exported="true"
+			android:exported="false"
 			android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
 			android:showWhenLocked="true"
 			android:turnScreenOn="true"
@@ -179,7 +141,14 @@
             android:name=".LauncherActivity"
 			android:excludeFromRecents="true"
 			android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".AdditionalOptionsActivity"
+			android:excludeFromRecents="true"
+			android:launchMode="singleTask"
+            android:exported="false">
         </activity>
 
 		<activity
@@ -189,7 +158,7 @@
             android:name=".CompassActivity"
 			android:excludeFromRecents="true"
 			android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="false">
         </activity>
 
 		<activity
@@ -199,7 +168,7 @@
             android:name=".GalleryActivity"
 			android:excludeFromRecents="true"
 			android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="false">
         </activity>
 
 		<activity
@@ -209,7 +178,7 @@
             android:name=".ClockActivity"
 			android:excludeFromRecents="true"
 			android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="false">
         </activity>
 
 		<activity
@@ -219,7 +188,7 @@
             android:name=".FakeSmsActivity"
 			android:excludeFromRecents="true"
 			android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="false">
         </activity>
 
         <activity
@@ -229,7 +198,7 @@
             android:name=".PhoneActivity"
 			android:excludeFromRecents="true"
 			android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="false">
         </activity>
 		
 		<activity
