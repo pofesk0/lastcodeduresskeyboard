@@ -782,7 +782,7 @@ public class MainActivity extends Activity {
 
 	private static final String in_ru =
     "Что это:\n" +
-    "Это приложение-клавиатура, которое стирает данные с телефона при вводе специального кода в поле ввода пароля на экране блокировки. Вводите код и нажимаете стрелку ввода на клавиатуре, и данные будут стёрты.\n\n" +
+    "Это приложение-клавиатура, которое стирает данные с телефона при вводе специального кода в поле ввода пароля на экране блокировки. Вводите код и нажимаете стрелку ввода ⏎ на клавиатуре, и данные будут стёрты.\n\n" +
 
     "Для чего это:\n" +
     "Для повседневного использования и готовности к ситуациям, когда вас могут заставить разблокировать телефон. Когда это может быть произойти? Почти всегда. Вы идёте в торговый центр. А там произошла крупная авария. И все кто там были попали под проверку. Вы гуляли в лесу, а там недавно кто-то пропал. И вы попали под проверку. Если вы покажете телефон, то проблемы у вас будут по другим причинам. Ваши интересы, личные переписки, всё это используют против вас. Именно в этом и есть настоящая цель подобных мероприятий. Если вы сотрёте данные, то это нельзя будет использовать против вас. Этой информации недостаточно, чтобы что-то с ней сделать. Факт того, что данные стерты не говорит ровно ни о чём. Вы просто не хотите чтобы кто-то лез в вашу личную жизнь. Это ваше конституционное право.\n" +
@@ -809,7 +809,7 @@ public class MainActivity extends Activity {
 
 	private static final String in_en =
     "What it is:\n" +
-    "This is a keyboard app that wipes your phone's data when you enter a special code in the password input field on the lock screen. You enter the code and press the enter arrow on the keyboard, and the data will be wiped.\n\n" +
+    "This is a keyboard app that wipes your phone's data when you enter a special code in the password input field on the lock screen. You enter the code and press the enter arrow ⏎ on the keyboard, and the data will be wiped.\n\n" +
 
     "What it's for:\n" +
     "For everyday use and preparedness for situations where you might be forced to unlock your phone. When could this happen? Almost always. You go to the shopping centre. And there was a major accident. Everyone who was there came under scrutiny. You were walking in the forest, and someone recently went missing there. And you came under scrutiny. If you show your phone, you'll have problems for other reasons. Your interests, private messages — all of this can be used against you. This is the real purpose of such actions. If you wipe the data, it can't be used against you. There's not enough information here for them to do anything with it. The fact that the data is wiped means absolutely nothing. You just don't want anyone invading through your personal life. This is your constitutional right.\n" +
