@@ -9,14 +9,14 @@ https://f-droid.org/packages/duress.keyboard/
 
 Can't install (Не можете установить)? 
 
-(Переименуйте apk-файл в вашей папке Download  в телефоне на app-release.apk и используйте эту ADB комманду:)
+(Переименуйте apk-файл в вашей папке Download в телефоне на app-release.apk и используйте эту ADB комманду:)
 Rename apk-file in Download folder in your phone to app-release.apk and use this ADB command:
 
 ```
 adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.apk && adb shell pm install --bypass-low-target-sdk-block -r /data/local/tmp/app.apk ; adb shell rm /data/local/tmp/app.apk
 ```
 
-(Или если Play-Protect блокирует установку, исползуйте:)
+(Или если Play-Protect блокирует установку, используйте:)
 Or if Play-Protect blocks install, use:
 
 ```
