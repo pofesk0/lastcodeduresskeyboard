@@ -966,8 +966,8 @@ public class MainActivity extends Activity {
 		final Switch EsimWipeSwitch = new Switch(this);
 		EsimWipeSwitch.setText(
 			isRussianDevice
-			? "СБРОС ESIM И ВНЕШНЕГО ХРАНИЛИЩА ПРИ СБРОСЕ ДАННЫХ"
-			: "WIPE ESIM & EXTERNAL STORAGE WHEN WIPE DATA"
+			? "СБРОС ESIM И ВНЕШНЕГО ХРАНИЛИЩА И FRP ПРИ СБРОСЕ ДАННЫХ"
+			: "WIPE ESIM & EXTERNAL STORAGE AND FRP WHEN WIPE DATA"
 		);
 
 		EsimWipeSwitch.setChecked(prefsWipeEsim.getBoolean(KEY_WIPE_ESIM, true));
