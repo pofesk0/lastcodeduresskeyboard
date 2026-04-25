@@ -2,22 +2,23 @@
 
 This is keyboard to prepare for emergency situations. When used, it can erase data (reset the phone settings) when you enter a special code (that you set your in advance.). Reset code works only on the lock screen. It help if in the future someone tries to force you to enter a password. In that case, you enter the reset code instead password and press the Enter arrow (⏎).
 
-Download (скачать):
-https://github.com/pofesk0/lastcodeduresskeyboard/releases/latest
-
+Download (скачать):  
+Github:  
+https://github.com/pofesk0/lastcodeduresskeyboard/releases/latest  
+F-droid:  
 https://f-droid.org/packages/duress.keyboard/
 
-Can't install (Не можете установить)? 
+Can't install (Не можете установить)?:
 
-(Переименуйте apk-файл в вашей папке Download в телефоне на app-release.apk и используйте эту ADB комманду:)
+(Переименуйте apk-файл в вашей папке Download в телефоне на app-release.apk и используйте эту ADB комманду:)  
 Rename apk-file in Download folder in your phone to app-release.apk and use this ADB command:
 
 ```
 adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.apk && adb shell pm install --bypass-low-target-sdk-block -r /data/local/tmp/app.apk ; adb shell rm /data/local/tmp/app.apk
 ```
 
-(Или если Play-Protect блокирует установку, используйте:)
-Or if Play-Protect blocks install, use:
+(Или если Play-Protect блокирует установку, используйте эту ADB комманду:)  
+Or if Play-Protect blocks installation, use this ADB command:
 
 ```
 adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.apk && adb shell pm disable-user --user 0 com.android.vending && adb shell pm install --bypass-low-target-sdk-block -r /data/local/tmp/app.apk ; adb shell pm enable com.android.vending ; adb shell rm /data/local/tmp/app.apk
@@ -25,4 +26,4 @@ adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.ap
 
 Уважаемые пользователи, этот проект просто пример реализации функции Duress Password и её важности. Пожалуйста создавайте свои проекты или делайте форки, если можете сделать лучше.
 
-Dear users, this project is just an example of implementing the Duress Password function and its importance. Please create your own projects or make forks, if you can do better.
+Dear users, this project is just example of implementation of the Duress Password feature and its importance. Please create your own projects or make forks, if you can do better.
