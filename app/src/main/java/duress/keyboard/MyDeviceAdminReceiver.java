@@ -47,41 +47,9 @@ private static final String PREFS_NAME = "SimpleKeyboardPrefs";
 			 } catch (Exception e) {}
 		 }
 		 
-		 boolean autoRunEnabled = prefs.getBoolean(KEY_AUTORUN, false);
-		 if (autoRunEnabled) {
-		
-			PackageManager pm = context.getPackageManager();
-			ComponentName cn = new ComponentName(context, InputActivity.class);
-
-			pm.setComponentEnabledSetting(
-				cn,
-				PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-				PackageManager.DONT_KILL_APP
-			);
-            scheduleExactAlarm(context);
-        }}
+		 }
     }
-
-    private void scheduleExactAlarm(Context context) {
-		try {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        Intent intent = new Intent(context, InputActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-			context,
-			0,
-			intent,
-			PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
-
-        long triggerTime = System.currentTimeMillis() + 7000; // через 7 секунд
-        if (alarmManager != null) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
-        }} catch (Throwable t) {}
-    }
-	
+    	
     @Override
     public void onEnabled(Context context, Intent intent) {
         Toast.makeText(context,"Device Admin Enabled", Toast.LENGTH_SHORT).show();
