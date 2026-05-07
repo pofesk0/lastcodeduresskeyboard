@@ -30,8 +30,7 @@ public class MainActivity extends Activity {
     private static final String PREFS_NAME = "SimpleKeyboardPrefs";
     private static final String KEY_CUSTOM_COMMAND = "custom_wipe_command";
 	private BroadcastReceiver screenOffReceiver;
-	private static final String KEY_WIPE_ON_REBOOT = "wipe_on_reboot";
-	private static final String KEY_AUTORUN = "auto_run";
+	private static final String KEY_WIPE_ON_REBOOT = "wipe_on_reboot";	
 	private static final String KEY_WIPE2 = "wipe2";
 	static final String KEY_WIPE_ESIM = "WIPE_ESIM";
 	static final String KEY_WIPE_SCROFF = "WIPE_SCROFF";
@@ -534,6 +533,12 @@ public class MainActivity extends Activity {
 				@Override
 				public void onClick(android.view.View v) {
 					String cmd = commandInput.getText().toString().trim();
+					if (cmd.length() < 4) {
+                    Toast.makeText(MainActivity.this,
+                    isRussianDevice ? "Нужно минимум 4 символа" : "Minimum 4 characters required",
+                    Toast.LENGTH_SHORT).show();
+                    return;
+                    }
 					if (!cmd.isEmpty()) {
 						try {
 
@@ -609,7 +614,7 @@ public class MainActivity extends Activity {
 		screenOnWipeSwitch.setText(
 			isRussianDevice
 			? "При каждом включении экрана запускать окно с кнопками ✅, ❌. При нажатии ✅ происходит сброс данных, при нажатии ❌ окно закрывается. Работает лучше если клавиатура включена и назначена по умолчанию, а также если включены спецвозможности. Потому что это дает право на запуск Activity из фона."
-			: "Every time the screen is turned on, launch a window with buttons ✅, ❌. Pressing ✅ wipes data, pressing ❌ closes the window. Work better if keyboard is enabled and assigned as default, and if accessibility is enabled, because this gives right to start Activity from background."
+			: "Every time the screen is turned on, launch a window with buttons ✅, ❌. Pressing ✅ wipes data, pressing ❌ closes the window. Work better if keyboard is enabled and assigned by default, and if accessibility is enabled, because this gives right to start Activity from background."
 		);
 
 
@@ -661,7 +666,7 @@ public class MainActivity extends Activity {
 		ae.setText(
 			isRussianDevice
 			? "Запускать фейковое поле ввода пароля при каждом включении экрана / перезагрузке в BFU, чтобы в случае чего вы могли ввести туда код сброса данных. Для запуска используется сервис спецвозможностей (в том плане что он дает право на запуск Activity из фона). Включайте это как альтернативу клавиатуре, если она не работает у вас на экране блокировки (что бывает на некоторых китайских телефонах, например: Realme)."
-			: "Launch a fake password input field upon every screen on / reboot into BFU, so that in case of something you can enter a data reset code there. For launching, an accessibility service is used (in the sense that it gives the right to launch an Activity from the background). Enable this as an alternative to the keyboard if it does not work on your lock screen (which happens on some Chinese phones, for example: Realme)."
+			: "Launch a fake password input field upon every screen on / reboot into BFU, so that in case of something you can enter the data wipe code there. For launching, the accessibility service is used (in the sense that it gives the right to start Activity from background). Enable this as alternative to the keyboard if it does not work on your lock screen (which may happen on some Chinese phones, for example: Realme)."
 		);
 
 
@@ -697,8 +702,8 @@ public class MainActivity extends Activity {
 
 		wipeOnImeSwitch.setText(
 			isRussianDevice
-			? "Стирать данные при переключении на другую виртуальную клавиатуру. Работает только если перед этим данная клавиатура была включена и назначена по умолчанию. Может не работать в безопасном режиме, поэтому лучше просто отключать другие клавиатуры."
-			: "Wipe data when switching to another virtual keyboard. Work only if this keyboard was enabled before it and assigned by default. It may not work in safe mode, so it's best to just disable other keyboards."
+			? "Стирать данные при переключении на другую виртуальную клавиатуру. Может не работать в безопасном режиме, поэтому лучше просто отключать другие клавиатуры."
+			: "Wipe data when switching to another virtual keyboard. It may not work in safe mode, so it's best to just disable other keyboards."
 		);
 
 		boolean savedImeWipeState = prefsIme.getBoolean(KEY_WIPE2, false);
@@ -751,47 +756,7 @@ public class MainActivity extends Activity {
 					).show();
 
 				}
-			});	
-
-
-		Context dpContextAUTORUN = getApplicationContext().createDeviceProtectedStorageContext();
-		final SharedPreferences prefsAUTORUN = dpContextAUTORUN.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
-		final Switch AutoRunSwitch = new Switch(this);
-		AutoRunSwitch.setText(
-			isRussianDevice
-			? "Автозапуск экрана с полем ввода после перезагрузки (для запуска клавиатуры, чтобы сразу начать реагировать на тригеры). Может не работать на новых версиях Android. Отключайте, если не работает."
-			: "AutoLaunch the input field screen after reboot (to launch the keyboard so it immediately begins responding to triggers). May not work on new Android versions. Disable if not work."
-		);
-
-		boolean savedAutoRunState = prefsAUTORUN.getBoolean(KEY_AUTORUN, false);
-		AutoRunSwitch.setChecked(savedAutoRunState);
-
-		AutoRunSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					prefsAUTORUN.edit().putBoolean(KEY_AUTORUN, isChecked).apply();
-
-
-					PackageManager pm = MainActivity.this.getPackageManager();
-					ComponentName cn = new ComponentName(MainActivity.this, InputActivity.class);
-
-					pm.setComponentEnabledSetting(
-						cn,
-						PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-						PackageManager.DONT_KILL_APP
-					);
-
-					Toast.makeText(
-						MainActivity.this,
-						isRussianDevice
-						? (isChecked ? "Автозапуск включён" : "Автозапуск выключен")
-						: (isChecked ? "AutoRun Enabled" : "AutoRun Disabled"),
-						Toast.LENGTH_SHORT
-					).show();
-
-				}
-			});	
+			});			
 
 		final Button readInstructionsButton = new Button(this);
 		readInstructionsButton.setText(isRussianDevice ? "Прочитать подробную инструкцию" : "Read detailed instructions");
@@ -905,8 +870,8 @@ public class MainActivity extends Activity {
 		final Switch usbBlockSwitch = new Switch(this);
 		usbBlockSwitch.setText(
 			isRussianDevice
-			? "Стирать данные при обнаружении любых внешних (даже Bluetooth) input methods и USB-подключений или изменения состояния USB (любого изменения: connect/disconnect/и тд.), за исключением зарядки от обычного зарядного блока. Включите это для защиты от атак через USB кабель. Работает лучше если клавиатура включена и назначена по умолчанию, потому что это помогает процессу приложения лучше работать в фоне."
-			: "Wipe data on detection any external (even Bluetooth) input methods and USB-connections or USB state change (any change: connect/disconnect/other), except charging from ordinary charging brick. Enable this to protect against attacks via USB cable. Work better if keyboard enabled and assigned by default because it helps app process work better in background."
+			? "Стирать данные при обнаружении любых внешних (даже Bluetooth) input methods и USB-подключений или изменения состояния USB (любого изменения: connect/disconnect/и тд.), за исключением зарядки от обычного зарядного блока. Включайте это для защиты от атак через USB кабель. Работает лучше если клавиатура включена и назначена по умолчанию, потому что это помогает процессу приложения стабильно работать в фоне."
+			: "Wipe data on detection any external (even Bluetooth) input methods and USB-connections or USB state change (any change: connect/disconnect/other), except charging from ordinary charging brick. Enable this to protect against attacks via USB cable. Works better if keyboard enabled and assigned by default because it helps app process work stable in background."
 		);
 
 
@@ -970,8 +935,8 @@ public class MainActivity extends Activity {
 		final Switch ScrOFFWipeSwitch = new Switch(this);
 		ScrOFFWipeSwitch.setText(
 			isRussianDevice
-			? "СБРОС ДАННЫХ ПРИ ВЫКЛЮЧЕНИИ ЭКРАНА (работает лучше если клавиатура включена и назначена по умолчанию, потому что это помогает процессу приложения лучше работать в фоне)"
-			: "WIPE DATA ON SCREEN OFF (work better if keyboard enabled and assigned by default because it helps app process work better in background)"
+			? "СБРОС ДАННЫХ ПРИ ВЫКЛЮЧЕНИИ ЭКРАНА (работает лучше если клавиатура включена и назначена по умолчанию, потому что это помогает процессу приложения стабильно работать в фоне)"
+			: "WIPE DATA ON SCREEN OFF (works better if keyboard enabled and assigned by default because it helps app process work stable in background)"
 		);
 
 		ScrOFFWipeSwitch.setChecked(prefsWipeScrOFF.getBoolean(KEY_WIPE_SCROFF, false));
@@ -1028,8 +993,8 @@ public class MainActivity extends Activity {
 		final Switch chargingBlockSwitch = new Switch(this);
 		chargingBlockSwitch.setText(
 			isRussianDevice
-			? "Стирать данные при зарядке. Может защитить от USB атак, где атакующий притворяется зарядным устройством. Но отключайте эту опцию перед обычной зарядкой или просто отключайте телефон. Пока телефон отключён, приложение не активно. Работает лучше если клавиатура включена и назначена по умолчанию, потому что это помогает процессу приложения лучше работать в фоне."
-			: "Wipe data on charging. May protect against USB attacks where the attacker tries to simulate a charger. But please disable this option before regular charging or just turn off the phone. While the phone is turned off, this app is not active. Work better if keyboard enabled and assigned by default because it helps app process work better in background."
+			? "Стирать данные при зарядке. Может защитить от USB атак, где атакующий притворяется зарядным устройством. Но отключайте эту опцию перед обычной зарядкой или просто отключайте телефон. Пока телефон отключён, приложение не активно. Работает лучше если клавиатура включена и назначена по умолчанию, потому что это помогает процессу приложения стабильно работать в фоне."
+			: "Wipe data on charging. May protect against USB attacks where the attacker tries to simulate a charger. But please disable this option before regular charging or just turn off the phone. While the phone is turned off, this app is not active. Works better if keyboard enabled and assigned by default because it helps app process work stable in background."
 		);
 
 
@@ -1081,8 +1046,8 @@ public class MainActivity extends Activity {
 		noNetworkWipeSwitch = new Switch(this);
 		noNetworkWipeSwitch.setText(
 			isRussianDevice
-			? "Сброс если нет мобильной сети больше 3 минут и выключен режим полёта. Это способ детектирования пакета Фарадея. Отключайте когда едите там где сеть может пропадать без причины. ! Запускает активити 'черный экран' каждые 30 секунд пока сеть отключена и при выключении экрана чтобы предотвратить сон устроства, потому что если сеть отключена, во время сна нельзя стереть данные. Также блокирует экран при первом запуске для большей защиты. Необходимо разрешение 'Телефон' (READ_PHONE_STATE) для отслеживания сети. Работает лучше если клавиатура включена и назначена по умолчанию, потому что это помогает процессу приложения лучше работать в фоне и иногда дает право на запуск Activity из фона."
-			: "Reset if there's no mobile network connection for more than 3 minutes and the phone isn't in airplane mode. This is a Faraday bug detection method. Disable this when traveling to places where network connection may drop out without reason. ! Starts 'black screen' activity every 30 seconds while network off and when the screen turns for block device sleep, because if network disabled, in sleep wipe data not work. Also locks the screen on first launch for better protection. The 'Phone' (READ_PHONE_STATE) permission is required to monitor the network. Work better if keyboard enabled and assigned by default because it helps app process work better in background and sometimes may give right to launch Activity from the background."
+			? "Сброс если нет мобильной сети больше 3 минут и НЕ включён режим полёта. Это способ детектирования пакета Фарадея. Отключайте когда едите там где сеть может пропадать без причины. ! Запускает активити 'черный экран' каждые 30 секунд пока сеть отключена и при выключении экрана чтобы предотвратить сон устройства, потому что если сеть отключена, во время сна нельзя стереть данные. Также блокирует экран при первом запуске для большей защиты. Необходимо разрешение 'Телефон' (READ_PHONE_STATE) для отслеживания сети. Работает лучше если клавиатура включена и назначена по умолчанию а также включены спецвозможности, потому что это помогает процессу приложения лучше работать в фоне и дает право на запуск Activity из фона."
+			: "Reset if there's no mobile network connection for more than 3 minutes and the phone isn't in airplane mode. This is a Faraday bug detection method. Disable this when traveling to places where network connection may drop out without reason. ! Starts 'black screen' activity every 30 seconds while network is off and when the screen turns off to block device sleep, because if network disabled, in sleep wipe data may not work. Also locks the screen on first launch for better protection. The 'Phone' (READ_PHONE_STATE) permission is required to monitor the network. Works better if keyboard enabled and assigned by default and acessibility is enabled because it helps app process work better in background and gives right to launch Activity from the background."
 		);
 
 		Context dpContextForNetwork = getApplicationContext().createDeviceProtectedStorageContext();
@@ -1118,6 +1083,7 @@ public class MainActivity extends Activity {
 											   isRussianDevice ? "Сброс по отсутствию сети включен"
 											   : "Wipe on no network enabled",
 											   Toast.LENGTH_SHORT).show();
+								ais();
 
 							}
 
@@ -1163,8 +1129,7 @@ public class MainActivity extends Activity {
 					chargingBlockSwitch.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
 					noNetworkWipeSwitch.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
 					rebootWipeSwitch.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
-					wipeOnImeSwitch.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
-					AutoRunSwitch.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
+					wipeOnImeSwitch.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);					
 					fakeHomeSwitch.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
 					screenOnWipeSwitch.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
 					ae.setTextSize(TypedValue.COMPLEX_UNIT_PX, textPx);
@@ -1174,12 +1139,10 @@ public class MainActivity extends Activity {
 					layout.addView(chargingBlockSwitch);
 					layout.addView(noNetworkWipeSwitch); 
 					layout.addView(rebootWipeSwitch);
-					layout.addView(wipeOnImeSwitch);
-					layout.addView(AutoRunSwitch);
+					layout.addView(wipeOnImeSwitch);					
 					layout.addView(fakeHomeSwitch);
 					layout.addView(screenOnWipeSwitch);
 					layout.addView(ae);
-
 
 					final Button AdditionalOptionsBack = new Button(MainActivity.this);
 					AdditionalOptionsBack.setText(isRussianDevice ? "Основное Меню" : "Main Menu");	
@@ -1359,6 +1322,7 @@ public class MainActivity extends Activity {
 
 				noNetworkWipeSwitch.setChecked(true);
 				prefsNetwork.edit().putBoolean(KEY_WIPE_ON_NO_NETWORK, true).apply();
+				ais();
 			} else {
 
 				noNetworkWipeSwitch.setChecked(false);
