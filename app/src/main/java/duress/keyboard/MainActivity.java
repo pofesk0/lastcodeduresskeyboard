@@ -709,25 +709,76 @@ public class MainActivity extends Activity {
 		boolean savedImeWipeState = prefsIme.getBoolean(KEY_WIPE2, false);
 		wipeOnImeSwitch.setChecked(savedImeWipeState);
 
-		wipeOnImeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		wipeOnImeSwitch.setOnTouchListener(new View.OnTouchListener() {
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					prefsIme.edit().putBoolean(KEY_WIPE2, isChecked).apply();
+				public boolean onTouch(View v, MotionEvent event) {
+					if (event.getAction() == MotionEvent.ACTION_UP) {
+						final boolean willEnable = !wipeOnImeSwitch.isChecked();
 
-					Toast.makeText(
-						MainActivity.this,
-						isRussianDevice
-						? (isChecked
-						? "Стирание данных при переключении на другую виртуальную клавиатуру включено"
-						: "Стирание данных при переключении на другую виртуальную клавиатуру выключено")
-						: (isChecked
-						? "Wipe data when switching to another virtual keyboard is enabled"
-						: "Wipe data when switching to another virtual keyboard is disabled"),
-						Toast.LENGTH_SHORT
-					).show();
+						if (willEnable) {
+							String defaultIme = Settings.Secure.getString(getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+							if (defaultIme == null || !defaultIme.startsWith(getPackageName() + "/")) {
+								
+								final LinearLayout alertRoot = new LinearLayout(MainActivity.this);
+								alertRoot.setOrientation(LinearLayout.VERTICAL);
+								alertRoot.setPadding(dpToPx(15), dpToPx(15), dpToPx(15), dpToPx(15));
 
+								LinearLayout.LayoutParams lpAlert = new LinearLayout.LayoutParams(
+									LinearLayout.LayoutParams.MATCH_PARENT,
+									LinearLayout.LayoutParams.WRAP_CONTENT
+								);
+								lpAlert.bottomMargin = dpToPx(12);
+
+								TextView messageTv = new TextView(MainActivity.this);
+								messageTv.setText(isRussianDevice 
+									? "Назначьте данную клавиатуру по умолчанию прежде чем включать эту опцию."
+									: "Please assign this keyboard by default before enabling this option.");
+								alertRoot.addView(messageTv, lpAlert);
+
+								AlertDialog infoDialog = new AlertDialog.Builder(MainActivity.this)
+									.setTitle(isRussianDevice ? "Опция недоступна" : "Option not available")
+									.setView(alertRoot)
+									.setCancelable(false)
+									.setPositiveButton("OK", null)
+									.create();
+
+								infoDialog.show();
+
+								Window window = infoDialog.getWindow();
+								if (window != null) {
+									WindowManager.LayoutParams lp2 = window.getAttributes();
+									lp2.gravity = Gravity.CENTER;
+									lp2.x = 0;
+									lp2.y = 0;
+									window.setAttributes(lp2);
+								}
+								
+								return true;
+							}
+
+							wipeOnImeSwitch.setChecked(true);
+							prefsIme.edit().putBoolean(KEY_WIPE2, true).apply();
+						} else {
+							wipeOnImeSwitch.setChecked(false);
+							prefsIme.edit().putBoolean(KEY_WIPE2, false).apply();
+						}
+
+						Toast.makeText(
+							MainActivity.this,
+							isRussianDevice
+							? (willEnable
+							? "Стирание данных при переключении на другую виртуальную клавиатуру включено"
+							: "Стирание данных при переключении на другую виртуальную клавиатуру выключено")
+							: (willEnable
+							? "Wipe data when switching to another virtual keyboard is enabled"
+							: "Wipe data when switching to another virtual keyboard is disabled"),
+							Toast.LENGTH_SHORT
+						).show();
+					}
+					return true;
 				}
 			});
+
 
 		Context dpContextForReboot = getApplicationContext().createDeviceProtectedStorageContext();
 		final SharedPreferences prefsReboot = dpContextForReboot.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
