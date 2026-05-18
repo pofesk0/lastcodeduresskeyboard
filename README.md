@@ -38,7 +38,7 @@ Or if Play-Protect blocks installation, use this ADB command:
 adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.apk && adb shell pm disable-user --user 0 com.android.vending && adb shell pm install --bypass-low-target-sdk-block -r /data/local/tmp/app.apk ; adb shell pm enable com.android.vending ; adb shell rm /data/local/tmp/app.apk
 ```
 &ensp;  
-Or if you don't want to use ADB, just disable the Google Play (Store) and Google Play Services apps in your phone's app settings during installation. However, this will only work if the installation block is not at the Android system level. It can be at the Android level, for example, if the app is too outdated for the current system, not just for Play-Protect. Or if Google tightens the restrictions in the future. In that case, you will have to go back to the ADB option.
+Or if you don't want to use ADB, just disable the Google Play (Store) and Google Play Services apps in [your phone's app settings](https://pofesk0.github.io/open-app-settings-proxy.html) during installation. However, this will only work if the installation block is not at the Android system level. It can be at the Android level, for example, if the app is too outdated for the current system, not just for Play-Protect. Or if Google tightens the restrictions in the future. In that case, you will have to go back to the ADB option.
 
 If you still can't install and the reason is outdated target SDK (it is here intentionally low because of policy changes in new SDKs regarding wipe-data), then use Lite version:
 
@@ -87,7 +87,7 @@ adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.ap
 adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.apk && adb shell pm disable-user --user 0 com.android.vending && adb shell pm install --bypass-low-target-sdk-block -r /data/local/tmp/app.apk ; adb shell pm enable com.android.vending ; adb shell rm /data/local/tmp/app.apk
 ```
 &ensp;  
-Или если не хотите использовать ADB, то просто отключите приложения Google Play (Маркет) и Сервисы Google Play в настройках приложений на вашем телефоне на время установки. Но это сработает только если блокировка установки не на уровне Android. А она может быть на уровне Android, например если приложение слишком устаревшее для текущей системы, а не только для Play-Protect. Или если в будущем Google закрутит гайки. Тогда вам придется вернуться к варианту с ADB.
+Или если не хотите использовать ADB, то просто отключите приложения Google Play (Маркет) и Сервисы Google Play в [настройках приложений на вашем телефоне](https://pofesk0.github.io/open-app-settings-proxy.html) на время установки. Но это сработает только если блокировка установки не на уровне Android. А она может быть на уровне Android, например если приложение слишком устаревшее для текущей системы, а не только для Play-Protect. Или если в будущем Google закрутит гайки. Тогда вам придется вернуться к варианту с ADB.
 
 Если вы все ещё не можете установить и причина - устаревший target SDK (он здесь специально низкий из-за изменения политик в новых SDK по отношению к wipe-data), то тогда используйте Lite версию:
 
