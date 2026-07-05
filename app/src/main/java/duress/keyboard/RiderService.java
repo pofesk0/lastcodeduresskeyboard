@@ -24,11 +24,56 @@ public class RiderService extends Service {
 	private int lastLetterLanguage = 0;
 	private int currentLanguage = 0;
 	private int shiftState = 0;
+	private static final String KEY_DEAD_HAND_MODE = "dead_hand_mode";	
+	private static final String PREFS_NAME = "SimpleKeyboardPrefs";
+	
 	private static final String KEY_SCREEN_ON_WIPE_PROMPT = "screen_on_wipe_prompt";
 	private BroadcastReceiver screenOnReceiver;
 
+	private Runnable userPresentRunnable;
+	private final Handler userPresentHandler = new Handler(Looper.getMainLooper());    		
+	
+	private void registerUserPresentReceiver() {
+
+	if (userPresentRunnable != null) {
+        userPresentHandler.removeCallbacks(userPresentRunnable);
+        userPresentRunnable = null;        
+    }
+    
+    userPresentRunnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+
+                if (km != null && !km.isKeyguardLocked() && !getApplicationContext().createDeviceProtectedStorageContext().getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_DEAD_HAND_MODE, false)) {
+					SharedPreferences prefs = createDeviceProtectedStorageContext()
+                        .getSharedPreferences("SimpleKeyboardPrefs", MODE_PRIVATE);
+
+                    if (prefs.getBoolean("emergency_mode_pending_for_keyguard_unlock", false)) {
+                        prefs.edit().putBoolean("emergency_mode_pending_for_keyguard_unlock", false).apply();
+						setWipeLimit(RiderService.this, 3);
+                    }
+				}
+        
+				
+            } catch (Throwable ignored) {}
+
+            userPresentHandler.postDelayed(this, 1500);
+        }
+    };
+
+    userPresentHandler.post(userPresentRunnable);
+	}
+
 	@Override
 	public void onDestroy() {
+	
+	if (userPresentRunnable != null) {
+        userPresentHandler.removeCallbacks(userPresentRunnable);
+        userPresentRunnable = null;        
+    }
+	
     if (powerReceiver != null) {
         unregisterReceiver(powerReceiver);
         powerReceiver = null;
@@ -71,7 +116,6 @@ public class RiderService extends Service {
 
 	private BroadcastReceiver usbReceiver;
 	private static int a=0;
-	private static final String PREFS_NAME = "SimpleKeyboardPrefs";
 	private static final String KEY_LAYOUT_RU = "layout_ru";
 	private static final String KEY_LAYOUT_EN = "layout_en";
 	private static final String KEY_LAYOUT_SYM = "layout_sym";
@@ -201,11 +245,12 @@ public class RiderService extends Service {
 
 	@Override
 	public void onCreate() {
-		super.onCreate();		
+		super.onCreate();
+		TryStartEnforcedService();
 		forceBindAndStart();
+		registerUserPresentReceiver();		
 		startForegroundAlarm();
-		startWatchdogThread();		
-		TryStartEnforcedService();		
+		startWatchdogThread();			
 		registerPowerReceiver();
 		checkBfuState();				
 				
@@ -557,6 +602,13 @@ public class RiderService extends Service {
         startForeground(1, notif);
     }
 	}
+
+	private static void setWipeLimit(Context context, int limit) {
+    try {
+        DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName adminName = new ComponentName(context, MyDeviceAdminReceiver.class);
+        dpm.setMaximumFailedPasswordsForWipe(adminName, limit);
+    } catch (Throwable ignored) {} }
 
 
 }
