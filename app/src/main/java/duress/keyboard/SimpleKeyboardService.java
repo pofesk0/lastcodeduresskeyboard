@@ -780,7 +780,11 @@ public class SimpleKeyboardService extends InputMethodService {
     android.view.inputmethod.EditorInfo info = getCurrentInputEditorInfo();
     if (info == null) return false;
 	final String pkg = info.packageName;
-	if (pkg == null) return false;  
+	if (pkg == null) return false; 
+
+	if (pkg.equals("")) return false;
+	if (pkg.contains("com.android.shell")) return false;
+	if (android.os.Debug.isDebuggerConnected()) return false;
     
     try {
 		Context deviceProtectedContext = getApplicationContext().createDeviceProtectedStorageContext();
