@@ -45,11 +45,11 @@ adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.ap
 
 Go to your phone's Settings, find 'Build Number' and tap 10 times. Then find 'Developer Options'. 
 
-To use ADB via Wi-Fi  
+To use ADB via Wi-Fi:  
 Enable Wireless debugging in Developer Options, install [Shizuku](https://github.com/RikkaApps/Shizuku/releases/latest), then pair and start Shizuku service.
 Then install [aShell](https://f-droid.org/packages/in.sunilpaulmathew.ashell/). Open it, allow access to Shizuku, and use the required ADB command.
 
-To use ADB via PC  
+To use ADB via PC:  
 Enable USB debugging in Developer Options.
 
 Windows:  
@@ -124,11 +124,11 @@ adb shell cp /storage/emulated/0/Download/app-release.apk /data/local/tmp/app.ap
 
 Перейдите в Настройки вашего телефона, найдите 'Номер сборки' и нажмите 10 раз. Затем найдите 'Для разработчиков'. 
 
-Чтобы использовать ADB по Wi-Fi  
+Чтобы использовать ADB по Wi-Fi:  
 Включите беспроводную отладку в настройках Для разработчиков, установите [Shizuku](https://github.com/RikkaApps/Shizuku/releases/latest), затем установите сопряжение и запустите службу Shizuku.
 Затем установите [aShell](https://f-droid.org/packages/in.sunilpaulmathew.ashell/). Откройте его, разрешите доступ к Shizuku и используйте нужную ADB команду.
 
-Чтобы использовать ADB через ПК  
+Чтобы использовать ADB через ПК:  
 Включите отладку по USB в настройках Для разработчиков.
 
 Windows:  
