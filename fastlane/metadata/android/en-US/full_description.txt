@@ -1,3 +1,8 @@
 Keyboard that reacts to triggers and performs security actions.
-​For example: wipes phone data when a Duress Password (special data wipe code you can set in the app) is entered on the lock screen, wipes phone data on other events (if you enable this).
-This keyboard is private, offline and doesn't collect any of your input.
+
+​For example: wipes phone data when a Duress Password (special data reset code configurable in this app) is entered on the lock screen, wipes phone data on other events you want, and also can lock the screen.
+
+This keyboard is private, offline, and doesn't collect any of your input.
+
+If you have any problems with installation, read this:
+https://github.com/pofesk0/how-to-install-duresskeyboard/
