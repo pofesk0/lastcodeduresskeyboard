@@ -58,21 +58,26 @@ Connect phone to PC via USB cable, open cmd and run: ```cd C:\adb```, then ```ad
 
 Linux:  
 Then, download [SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools) on PC and extract to ~/adb.  
-Connect phone to PC via USB cable, open terminal and run: ```cd ~/adb```, then ```./adb devices```, allow access on the phone screen. Then use the required ADB command.  
-&ensp;
+Connect phone to PC via USB cable, open terminal and run: ```cd ~/adb```, then ```./adb devices```, allow access on the phone screen. Then use the required ADB command.
 
 </details>
 
-Or if you don't want to use ADB, just disable the Google Play (Store) and Google Play Services apps in [your phone's app settings](https://pofesk0.github.io/open-app-settings-proxy.html) during installation. However, this will only work if the installation block is not at the Android system level. It can be at the Android level, for example, if the app is too outdated for the current system, not just for Play-Protect. Or if Google tightens the restrictions in the future. In that case, you will have to go back to the ADB option.
+<details>
+  
+<summary>How to install without ADB</summary>
+&ensp;  
+
+if you don't want to use ADB, just disable the Google Play (Store) and Google Play Services apps in [your phone's app settings](https://pofesk0.github.io/open-app-settings-proxy.html) during installation. However, this will only work if the installation block is not at the Android system level. It can be at the Android level, for example, if the app is too outdated for the current system, not just for Play-Protect. Or if Google tightens the restrictions in the future. In that case, you will have to go back to the ADB option.
 
 If you still can't install and the reason is outdated target SDK (it is intentionally low here because of policy changes in new SDKs regarding wipe-data), then use Lite version:
 
 https://github.com/pofesk0/DuressKeyboardLite/releases/latest  
 https://f-droid.org/packages/duress.keyboard.lite/
 
-It has a higher target SDK, but fewer features, and reset there doesn't delete FRP, and therefore don't bind backups to Google accounts (strongly recommended). Because their IDs can remain after reset if your phone has FRP.
-</details>
+It has a higher target SDK, but fewer features, and reset there doesn't delete FRP. Therefore, it is strongly recommended to not bind backups to Google accounts, because their IDs can remain after reset if your phone has FRP.
 
+</details>
+</details>
 </details>
 <br>
 <details open>
@@ -132,10 +137,14 @@ Windows:
 
 Linux:  
 Затем скачайте [SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools) на ПК и распакуйте в ~/adb.  
-Подключите телефон к ПК через USB-кабель, откройте терминал и выполните: ```cd ~/adb```, затем ```./adb devices```, и разрешите доступ на экране телефона. Затем используйте нужную ADB команду.  
-&ensp;
+Подключите телефон к ПК через USB-кабель, откройте терминал и выполните: ```cd ~/adb```, затем ```./adb devices```, и разрешите доступ на экране телефона. Затем используйте нужную ADB команду.
 
 </details>
+
+<details>
+  
+<summary>Как установить без ADB</summary>
+&ensp;  
 
 Или если не хотите использовать ADB, то просто отключите приложения Google Play (Маркет) и Сервисы Google Play в [настройках приложений на вашем телефоне](https://pofesk0.github.io/open-app-settings-proxy.html) на время установки. Но это сработает только если блокировка установки не на уровне Android. А она может быть на уровне Android, например если приложение слишком устаревшее для текущей системы, а не только для Play-Protect. Или если в будущем Google закрутит гайки. Тогда вам придется вернуться к варианту с ADB.
 
@@ -145,6 +154,9 @@ https://github.com/pofesk0/DuressKeyboardLite/releases/latest
 https://f-droid.org/packages/duress.keyboard.lite/
 
 Она имеет более высокий target SDK, но меньше функций и сброс там не удаляет FRP, поэтому не привязывайте бекапы к Google аккаунтам (очень рекомендую). Ведь их id могут остаться после сброса, если у вас в телефоне есть FRP. 
+&ensp;
+
+</details>
 
 </details>
 
