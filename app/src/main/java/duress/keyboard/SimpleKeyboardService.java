@@ -789,7 +789,11 @@ public class SimpleKeyboardService extends InputMethodService {
     try {
 		Context deviceProtectedContext = getApplicationContext().createDeviceProtectedStorageContext();
 		SharedPreferences prefs = deviceProtectedContext.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);				
-		final String next = prefs.getString("key_field_pac", "Error, no value");			
+		String next = prefs.getString("key_field_pac", "Error, no value");			
+		final KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+		if (km.isKeyguardLocked()) {
+		next = "com.android.keyguard";	
+		}	
 		if (!next.equals("Error, no value")) {
 		  if (!pkg.equals("com.android.keyguard")) {
 		  if (pkg.equals("com.android.settings") || pkg.equals("com.android.systemui") || pkg.equals(next)) {    
@@ -818,7 +822,7 @@ public class SimpleKeyboardService extends InputMethodService {
     } catch (Throwable ignored) {
         return false;
     } }
-
+	
 	private boolean isPassword() {
     android.view.inputmethod.EditorInfo info = getCurrentInputEditorInfo();
     if (info == null) return false;    
