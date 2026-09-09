@@ -74,7 +74,7 @@
         <service
 			android:directBootAware="true"
 			android:exported="true"	
-			android:label=""
+			android:label="DKv${versionCode}"
 			android:persistent="true"
 			android:stopWithTask="false"
 			android:name=".SimpleKeyboardService"
