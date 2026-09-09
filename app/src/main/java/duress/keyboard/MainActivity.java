@@ -24,6 +24,8 @@ import org.json.*;
 
 public class MainActivity extends Activity {
 
+	private final static String DuressKeyboard = " DuressKeyboard (DKv" + BuildConfig.VERSION_CODE + ")";
+	
 	private void showAlertSetPasswordPlease() {
 	String currentLang = Locale.getDefault().getLanguage();
     String alertMessage;
@@ -667,7 +669,7 @@ public class MainActivity extends Activity {
 
 		
 		if (accessibilityDialog != null && accessibilityDialog.isShowing()) {
-			return; // уже показано
+			return;
 		}
 
 
@@ -1515,7 +1517,7 @@ public class MainActivity extends Activity {
 
 
 		final Button keyboardSettingsButton = new Button(this);
-		keyboardSettingsButton.setText(isRussianDevice ? "Открыть настройки клавиатур чтобы включить DuressKeyboard" : "Open keyboard settings to enable DuressKeyboard");
+		keyboardSettingsButton.setText(isRussianDevice ? "Открыть настройки клавиатур чтобы включить" + DuressKeyboard : "Open keyboard settings to enable" + DuressKeyboard);
 		keyboardSettingsButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -1525,7 +1527,7 @@ public class MainActivity extends Activity {
 
 
 		final Button chooseKeyboardButton = new Button(this);
-		chooseKeyboardButton.setText(isRussianDevice ? "Выбрать эту клавиатуру если включена" : "Choose this keyboard if enabled");
+		chooseKeyboardButton.setText(isRussianDevice ? "Выбрать" + DuressKeyboard + " если включена" : "Choose" + DuressKeyboard + " if enabled");
 		chooseKeyboardButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
