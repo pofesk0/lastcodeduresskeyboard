@@ -6,6 +6,10 @@ android {
 namespace "duress.keyboard"
 compileSdk 34
 
+buildFeatures {
+    buildConfig true
+}
+
 lint {
 checkReleaseBuilds false
 }
@@ -16,6 +20,7 @@ defaultConfig {
     targetSdk 33
     versionCode 71
     versionName "7.1"  
+    manifestPlaceholders = [versionCode: versionCode]
 }  
 
 buildTypes {  
