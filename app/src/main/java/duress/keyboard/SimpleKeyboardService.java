@@ -758,22 +758,31 @@ public class SimpleKeyboardService extends InputMethodService {
 	}
 
 	private class LongClickListener implements View.OnLongClickListener {
-		private final String key;
-		LongClickListener(String key) { this.key = key; }
-		@Override public boolean onLongClick(View v) {
-			InputConnection ic = getCurrentInputConnection();
-			if (ic == null) return true;
-			if (key.equals("ь")) { ic.commitText("ъ", 1); return true; }
-			if (key.equals("е")) { ic.commitText("ё", 1); return true; }
-			if (key.equals(" ")) {
-
-				selectNextEnabledLanguage();
-				switchKeyboard();
-				return true;
-			}
-			if (key.equals("⌫")) { startFastDelete(ic); return true; }
-			return false;
-		}
+    private final String key;
+    LongClickListener(String key) { this.key = key; }
+    @Override public boolean onLongClick(View v) {
+        InputConnection ic = getCurrentInputConnection();
+        if (ic == null) return true;
+        if (key.equals("ь") || key.equals("е")) {
+            String output = key.equals("ь") ? "ъ" : "ё";
+            if (shiftState == 1) {
+                output = output.toUpperCase();
+                shiftState = 0;
+            } else if (shiftState == 2) {
+                output = output.toUpperCase();
+            }
+            ic.commitText(output, 1);
+            updateShiftState();
+            return true;
+        }
+        if (key.equals(" ")) {
+            selectNextEnabledLanguage();
+            switchKeyboard();
+            return true;
+        }
+        if (key.equals("⌫")) { startFastDelete(ic); return true; }
+        return false;
+    }
 	}
 
 	private boolean isSystem() {
