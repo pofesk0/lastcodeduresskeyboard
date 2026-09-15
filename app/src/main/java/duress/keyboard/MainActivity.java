@@ -128,7 +128,6 @@ public class MainActivity extends Activity {
 	private static final String KEY_DEAD_HAND_MODE = "dead_hand_mode";	
 	private android.app.AlertDialog chargingWarningDialog;
 	private android.app.AlertDialog confirmWipeFlagsDialog;
-	private android.app.AlertDialog adminErrorDialog;
 	private android.app.AlertDialog infoDialog;
 	private android.app.AlertDialog AdditionalOptionsWarning;
 	private Button AdditionalOptionsBack;
@@ -155,7 +154,6 @@ public class MainActivity extends Activity {
     private static final String KEY_LAYOUT_EMOJI = "layout_emoji";
     private static final String KEY_LAYOUT_ES = "layout_es";
 	private static boolean RESULT = false;
-	private static int isPendingAdmin = 0;
 	private EditText commandInput; 
     private static final String KEY_LANG_RU = "lang_ru";
     private static final String KEY_LANG_EN = "lang_en";
@@ -389,104 +387,6 @@ public class MainActivity extends Activity {
 			);
 	}    
 
-
-	private void ShowAdminErrorDialog() {
-    final boolean isRussian = "ru".equalsIgnoreCase(Locale.getDefault().getLanguage());
-
-    final LinearLayout root = new LinearLayout(this);
-    root.setOrientation(LinearLayout.VERTICAL);
-    root.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
-
-    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    );
-    lp.bottomMargin = dpToPx(12);
-
-    TextView t1 = new TextView(this);
-    if (isRussian) {
-        t1.setText("Вероятно, вы либо система отменили активацию прав администратора. Если это были вы или вы не знаете что произошло, например вы случайно нажали \"отмена\", то попробуйте снова.");
-    } else {
-        t1.setText("Probably, you or the system canceled the device administrator activation. If it was you or you don't know what happened, for example you accidentally tapped \"cancel\", please try again.");
-    }
-    root.addView(t1, lp);
-    
-    final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-    String title = isRussian ? "Ошибка активации прав администратора" : "Device Admin Activation Error";
-    
-    builder.setTitle(title)
-           .setView(root)
-           .setCancelable(false);
-           
-    adminErrorDialog = builder.create();
-
-    Button b1 = new Button(this);
-    b1.setText(isRussian ? "Попробовать снова" : "Try again");
-    root.addView(b1, lp);
-    b1.setOnClickListener(new View.OnClickListener() {
-        @Override 
-        public void onClick(View v) {            
-			isPendingAdmin = 1;
-			adminErrorDialog.dismiss();
-            AllowAdmin();
-        }
-    });
-
-    TextView t2 = new TextView(this);
-    if (isRussian) {
-        t2.setText("Если это была система, перейдите в настройки приложения, нажмите 3 точки в правом верхнем углу, затем \"разрешить ограниченные настройки\". После чего вернитесь сюда и попробуйте снова.");
-    } else {
-        t2.setText("If it was the system, go to the app settings, tap the 3 dots in the upper right corner, then \"allow restricted settings\". Then return here and try again.");
-    }
-    root.addView(t2, lp);
-
-    Button b2 = new Button(this);
-    b2.setText(isRussian ? "Перейти в настройки приложения" : "Go to app settings");
-    root.addView(b2, lp);
-    b2.setOnClickListener(new View.OnClickListener() {
-        @Override 
-        public void onClick(View v) {
-            Detalis();
-        }
-    });
-
-    TextView t3 = new TextView(this);
-    if (isRussian) {
-        t3.setText("Если 3 точек нет, значит окно активации прав администратора не является ограниченной настройкой. Тогда вернитесь наверх и попробуйте снова. Или перейдите в Настройки Администраторов, если не помогло.");
-    } else {
-        t3.setText("If there are no 3 dots, it means the admin activation window is not a restricted setting. Then return to the top and try again. Or go to Admin Settings if it didn't help.");
-    }
-    root.addView(t3, lp);
-
-	Button b3 = new Button(this);
-    b3.setText(isRussian ? "Открыть Настройки Администраторов" : "Go to Admin Settings");
-    root.addView(b3, lp);
-    b3.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            try {
-            android.content.Intent intent = new android.content.Intent();
-			intent.setComponent(new android.content.ComponentName("com.android.settings", "com.android.settings.DeviceAdminSettings"));
-            startActivity(intent);
-			isPendingAdmin = 1;	
-			adminErrorDialog.dismiss();	
-            } catch (Throwable e) {}
-        }
-    });	
-
-    adminErrorDialog.show();
-
-    android.view.Window window = adminErrorDialog.getWindow();
-    if (window != null) {
-        android.view.WindowManager.LayoutParams lp2 = window.getAttributes();
-        lp2.gravity = android.view.Gravity.CENTER;
-        lp2.x = 0;
-        lp2.y = 0;
-        window.setAttributes(lp2);
-    }
-  }
-
-
 	private void aetest(){
 
 		try {
@@ -585,8 +485,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		RESULT=false;
-		isPendingAdmin = 0;
+		RESULT=false;		
 		AdditionalOptionsBack=null;
 
 		if (deadHandDialog != null) {
@@ -629,14 +528,7 @@ public class MainActivity extends Activity {
                 accessibilityDialog.dismiss();
             }
             accessibilityDialog = null;
-        }
-
-        if (adminErrorDialog != null) {
-            if (adminErrorDialog.isShowing()) {
-                adminErrorDialog.dismiss();
-            }
-            adminErrorDialog = null;
-        }
+        }        
 
         if (emergencyModeAlertDialog != null) {
             if (emergencyModeAlertDialog.isShowing()) {
@@ -883,16 +775,12 @@ public class MainActivity extends Activity {
 			ComponentName adminComponent = new ComponentName(this, MyDeviceAdminReceiver.class);
 			DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 
-			if (!dpm.isAdminActive(adminComponent)) {
-			if (isPendingAdmin==0) {
-			isPendingAdmin=1;	
-			AllowAdmin(); 
-			} else if (isPendingAdmin==1) {
-			isPendingAdmin=2;
-			ShowAdminErrorDialog(); }
+			if (!dpm.isAdminActive(adminComponent)) {			
+			AllowAdmin(); 			
 			} else {
+			setContentView(layout);	
 			showEmergencyModeAlertDialog();
-			if (AdditionalOptionsWarning != null && AdditionalOptionsBack != null) showAdditionalOptionsWarning(AdditionalOptionsBack);					   
+			if (AdditionalOptionsWarning != null && AdditionalOptionsBack != null) showAdditionalOptionsWarning(AdditionalOptionsBack);						
 			}			
 
 		}}
@@ -1001,10 +889,10 @@ public class MainActivity extends Activity {
 
 				for (int i = start; i < end; i++) {
 					if (allowedChars.indexOf(source.charAt(i)) == -1) {
-						return ""; // Отклонить символ
+						return "";
 					}
 				}
-				return null; // Принять ввод
+				return null;
 			}
 		};
 
@@ -1902,8 +1790,7 @@ public class MainActivity extends Activity {
 				startActivityForResult(intent, 1337);
 			}
 		} else { 
-			RESULT=true;
-			setContentView(layout);
+			RESULT=true;			
 		}
     }
 
@@ -1924,8 +1811,7 @@ public class MainActivity extends Activity {
 		
 		if (requestCode == 1337) {
 			if (resultCode == RESULT_OK) {			
-				RESULT=true;		
-				setContentView(layout);
+				RESULT=true;						
 			} else {
 				finish();
 			}
