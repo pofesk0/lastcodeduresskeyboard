@@ -10,8 +10,7 @@ import java.util.*;
 
 public class EmergencyModeActivity extends Activity {
 
-    private AlertDialog adminErrorDialog;
-    private static int isPendingAdmin = 0;
+    private AlertDialog adminErrorDialog;    
 
     @Override
     protected void onResume() {
@@ -31,14 +30,8 @@ public class EmergencyModeActivity extends Activity {
         } catch (Throwable t) {
             if (dpm.isAdminActive(admin)) {
                 ShowLogDialog(t.toString());
-            } else {                
-                if (isPendingAdmin == 0) {
-                    isPendingAdmin = 2;
-                    ShowEmergencyDialog();
-                } else if (isPendingAdmin == 1) { 
-                    isPendingAdmin = 2;
-                    ShowAdminErrorDialog();
-                }
+            } else {                                                   
+				ShowEmergencyDialog();                 
             }
         }
     }
@@ -110,8 +103,7 @@ public class EmergencyModeActivity extends Activity {
         b1.setText(isRu ? "Дать права администратора" : "Grant Admin Rights");
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                isPendingAdmin = 1;
+            public void onClick(View v) {                
                 emergencyModeDialog.dismiss();
                 AllowAdmin();
             }
@@ -129,102 +121,6 @@ public class EmergencyModeActivity extends Activity {
             window.setAttributes(lp2);
         }
     }     
-
-	private void ShowAdminErrorDialog() {
-    final boolean isRussian = "ru".equalsIgnoreCase(Locale.getDefault().getLanguage());
-
-    final LinearLayout root = new LinearLayout(this);
-    root.setOrientation(LinearLayout.VERTICAL);
-    root.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
-
-    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT
-    );
-    lp.bottomMargin = dpToPx(12);
-
-    TextView t1 = new TextView(this);
-    if (isRussian) {
-        t1.setText("Вероятно, вы либо система отменили активацию прав администратора. Если это были вы или вы не знаете что произошло, например вы случайно нажали \"отмена\", попробуйте снова.");
-    } else {
-        t1.setText("Probably, you or the system canceled the device administrator activation. If it was you or you don't know what happened, for example you accidentally tapped \"cancel\", please try again.");
-    }
-    root.addView(t1, lp);
-    
-    final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-    String title = isRussian ? "Ошибка активации прав Администратора" : "Device Admin Activation Error";
-    
-    builder.setTitle(title)
-           .setView(root)
-           .setCancelable(false);
-           
-    adminErrorDialog = builder.create();
-
-    Button b1 = new Button(this);
-    b1.setText(isRussian ? "Попробовать снова" : "Try again");
-    root.addView(b1, lp);
-    b1.setOnClickListener(new View.OnClickListener() {
-        @Override 
-        public void onClick(View v) {            
-			isPendingAdmin = 1;
-			adminErrorDialog.dismiss();
-            AllowAdmin();
-        }
-    });
-
-    TextView t2 = new TextView(this);
-    if (isRussian) {
-        t2.setText("Если это была система, перейдите в настройки приложения, нажмите 3 точки в правом верхнем углу, затем \"разрешить ограниченные настройки\". После чего вернитесь сюда и попробуйте снова.");
-    } else {
-        t2.setText("If it was the system, go to the app settings, tap the 3 dots in the upper right corner, then \"allow restricted settings\". Then return here and try again.");
-    }
-    root.addView(t2, lp);
-
-    Button b2 = new Button(this);
-    b2.setText(isRussian ? "Перейти в настройки приложения" : "Go to app settings");
-    root.addView(b2, lp);
-    b2.setOnClickListener(new View.OnClickListener() {
-        @Override 
-        public void onClick(View v) {
-            Detalis();
-        }
-    });
-
-    TextView t3 = new TextView(this);
-    if (isRussian) {
-        t3.setText("Если 3 точек нет, значит окно активации прав администратора не является ограниченной настройкой. Тогда вернитесь наверх и попробуйте снова. Или перейдите в Настройки Администраторов, если не помогло.");
-    } else {
-        t3.setText("If there are no 3 dots, it means the admin activation window is not a restricted setting. Then return to the top and try again. Or go to Admin Settings if it didn't help.");
-    }
-    root.addView(t3, lp);
-
-	Button b3 = new Button(this);
-    b3.setText(isRussian ? "Открыть Настройки Администраторов" : "Go to Admin Settings");
-    root.addView(b3, lp);
-    b3.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            try {
-            android.content.Intent intent = new android.content.Intent();
-			intent.setComponent(new android.content.ComponentName("com.android.settings", "com.android.settings.DeviceAdminSettings"));
-            startActivity(intent);
-			isPendingAdmin = 1;	
-			adminErrorDialog.dismiss();	
-            } catch (Throwable e) {}
-        }
-    });	
-
-    adminErrorDialog.show();
-
-    android.view.Window window = adminErrorDialog.getWindow();
-    if (window != null) {
-        android.view.WindowManager.LayoutParams lp2 = window.getAttributes();
-        lp2.gravity = android.view.Gravity.CENTER;
-        lp2.x = 0;
-        lp2.y = 0;
-        window.setAttributes(lp2);
-    }
-  }
 
 	private void Detalis() {
     startActivity(
@@ -253,14 +149,7 @@ public class EmergencyModeActivity extends Activity {
 	    @Override
     protected void onDestroy() {
         super.onDestroy();
-        
-        if (adminErrorDialog != null) {
-            if (adminErrorDialog.isShowing()) {
-                adminErrorDialog.dismiss();
-            }
-            adminErrorDialog = null;
-        }
-
+                
         if (emergencyModeDialog != null) {
             if (emergencyModeDialog.isShowing()) {
                 emergencyModeDialog.dismiss();
