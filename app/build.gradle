@@ -18,8 +18,8 @@ defaultConfig {
     applicationId "duress.keyboard"  
     minSdk 29
     targetSdk 33
-    versionCode 72
-    versionName "7.2"  
+    versionCode 73
+    versionName "7.3"  
     manifestPlaceholders = [versionCode: versionCode]
 }  
 
