@@ -40,7 +40,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 appContext.startForegroundService(serviceIntent);    
                 appContext.startForegroundService(serviceIntent2);
                 } catch (Throwable t) {}
-                Thread.sleep(15000);
+                Thread.sleep(7000);
             } catch (Exception e) {
                
             } finally {
